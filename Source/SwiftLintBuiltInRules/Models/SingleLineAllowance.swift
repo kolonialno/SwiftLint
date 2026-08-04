@@ -42,12 +42,11 @@ extension SyntaxCollection where Element: WithTrailingCommaSyntax {
     /// body, no multiline string — since a join only takes back the breaks these rules would have made.
     ///
     /// The list's closing token is the caller's to check: a condition list has none.
-    func canRejoinOneLine(_ allowance: some SingleLineAllowance) -> Bool {
+    var canRejoinOneLine: Bool {
         allSatisfy { element in
             !element.trimmedDescription.contains("\n")
                 && !element.leadingTrivia.containsComment
                 && !element.trailingTrivia.containsComment
-                && !element.containsCallNeedingItsOwnShape(allowance)
         }
     }
 
@@ -132,20 +131,6 @@ extension SyntaxProtocol {
     /// The indentation of the line this node starts on, read from the tree so it survives a rewrite.
     var indentationOfOwnLine: Trivia {
         firstToken(viewMode: .sourceAccurate)?.indentationOfLine ?? []
-    }
-
-    /// A join yields to anything inside it that these rules will split, since a list on one line whose
-    /// element spans several reads worse than the split list it came from.
-    func containsCallNeedingItsOwnShape(_ allowance: some SingleLineAllowance) -> Bool {
-        children(viewMode: .sourceAccurate).contains { child in
-            if let call = child.as(FunctionCallExprSyntax.self),
-               call.arguments.count > 1,
-               call.arguments.exceedsSingleLineAllowance(allowance),
-               call.arguments.isOnOneLine {
-                return true
-            }
-            return child.containsCallNeedingItsOwnShape(allowance)
-        }
     }
 }
 

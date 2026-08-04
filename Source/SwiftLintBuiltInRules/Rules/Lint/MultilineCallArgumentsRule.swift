@@ -210,9 +210,8 @@ private extension MultilineCallArgumentsRule {
             guard !node.isInPatternMatchingPatternPosition, node.rightParen != nil else {
                 return super.visit(node)
             }
-            let exceedsAllowance = node.arguments.exceedsSingleLineAllowance(configuration)
             if node.arguments.count > 1,
-               exceedsAllowance,
+               node.arguments.exceedsSingleLineAllowance(configuration),
                node.arguments.isOnOneLine,
                !node.arguments.containsComment {
                 numberOfCorrections += 1
@@ -223,19 +222,25 @@ private extension MultilineCallArgumentsRule {
                         .with(\.rightParen, node.rightParen?.with(\.leadingTrivia, .newline + indentation))
                 )
             }
-            if configuration.requiresSingleLine,
-               !exceedsAllowance,
-               !node.arguments.isOnOneLine,
-               node.argumentsCanRejoinOneLine(configuration) {
-                numberOfCorrections += 1
-                return super.visit(
-                    node
-                        .with(\.leftParen, node.leftParen?.with(\.trailingTrivia, []))
-                        .with(\.arguments, node.arguments.joinedOnOneLine(startingWith: []))
-                        .with(\.rightParen, node.rightParen?.with(\.leadingTrivia, []))
-                )
+            // A split is decided before descending, so that a nested list can read the line this put it on.
+            // A join is decided after: an inner list coming back to one line is what makes the outer one
+            // joinable, and deciding first would leave that for a second run over the file.
+            let visited = super.visit(node)
+            guard configuration.requiresSingleLine,
+                  let call = visited.as(FunctionCallExprSyntax.self),
+                  !call.arguments.exceedsSingleLineAllowance(configuration),
+                  !call.arguments.isOnOneLine,
+                  call.argumentsCanRejoinOneLine(configuration)
+            else {
+                return visited
             }
-            return super.visit(node)
+            numberOfCorrections += 1
+            return ExprSyntax(
+                call
+                    .with(\.leftParen, call.leftParen?.with(\.trailingTrivia, []))
+                    .with(\.arguments, call.arguments.joinedOnOneLine(startingWith: []))
+                    .with(\.rightParen, call.rightParen?.with(\.leadingTrivia, []))
+            )
         }
     }
 }
@@ -246,7 +251,7 @@ private extension FunctionCallExprSyntax {
     func argumentsCanRejoinOneLine(_ configuration: MultilineCallArgumentsConfiguration) -> Bool {
         !arguments.isEmpty
             && rightParen?.leadingTrivia.containsComment != true
-            && arguments.canRejoinOneLine(configuration)
+            && arguments.canRejoinOneLine
     }
 }
 

@@ -33,7 +33,8 @@ private extension MultilineParametersRule {
         /// A parameter list within the allowance that is split anyway, which the rewriter brings back to
         /// one line.
         private func isSplitWithinAllowance(_ signature: FunctionSignatureSyntax) -> Bool {
-            configuration.requiresSingleLine && signature.parameterClause.canRejoinOneLine(configuration)
+            configuration.requiresSingleLine
+                && signature.parameterClause.canRejoinOneLine(within: configuration)
         }
 
         private func containsViolation(for signature: FunctionSignatureSyntax) -> Bool {
@@ -76,42 +77,70 @@ private extension MultilineParametersRule {
 private extension MultilineParametersRule {
     final class Rewriter: ViolationsSyntaxRewriter<ConfigurationType> {
         override func visit(_ node: FunctionDeclSyntax) -> DeclSyntax {
-            super.visit(node.with(\.signature, reshaped(node.signature)))
+            if let split = splitting(node.signature) {
+                return super.visit(node.with(\.signature, split))
+            }
+            let visited = super.visit(node)
+            guard let declaration = visited.as(FunctionDeclSyntax.self),
+                  let joined = joining(declaration.signature)
+            else {
+                return visited
+            }
+            return DeclSyntax(declaration.with(\.signature, joined))
         }
 
         override func visit(_ node: InitializerDeclSyntax) -> DeclSyntax {
-            super.visit(node.with(\.signature, reshaped(node.signature)))
+            if let split = splitting(node.signature) {
+                return super.visit(node.with(\.signature, split))
+            }
+            let visited = super.visit(node)
+            guard let declaration = visited.as(InitializerDeclSyntax.self),
+                  let joined = joining(declaration.signature)
+            else {
+                return visited
+            }
+            return DeclSyntax(declaration.with(\.signature, joined))
         }
 
-        /// The signature with its parameters in the shape their count asks for, or unchanged when they
-        /// already have it.
-        private func reshaped(_ signature: FunctionSignatureSyntax) -> FunctionSignatureSyntax {
+        /// The signature with its parameters one per line, or `nil` when they do not need it.
+        ///
+        /// Decided before descending, so that a nested list can read the line this puts it on.
+        private func splitting(_ signature: FunctionSignatureSyntax) -> FunctionSignatureSyntax? {
             let clause = signature.parameterClause
             let parameters = clause.parameters
-            guard !parameters.isEmpty else {
-                return signature
+            guard !parameters.isEmpty, !parameters.containsComment else {
+                return nil
             }
-            let exceedsAllowance = parameters.exceedsSingleLineAllowance(configuration)
-            if parameters.count > 1, exceedsAllowance, parameters.isOnOneLine, !parameters.containsComment {
-                numberOfCorrections += 1
-                return signature.with(\.parameterClause, split(clause))
+            let needsSplitting =
+                (parameters.count > 1
+                    && parameters.exceedsSingleLineAllowance(configuration)
+                    && parameters.isOnOneLine)
+                // Neither one line nor one per line, which is the shape this rule is named for.
+                || parameters.isSplitUnevenly
+            guard needsSplitting else {
+                return nil
             }
-            if configuration.requiresSingleLine, !exceedsAllowance, clause.canRejoinOneLine(configuration) {
-                numberOfCorrections += 1
-                return signature.with(
-                    \.parameterClause,
-                    clause
-                        .with(\.leftParen, clause.leftParen.with(\.trailingTrivia, []))
-                        .with(\.parameters, parameters.joinedOnOneLine(startingWith: []))
-                        .with(\.rightParen, clause.rightParen.with(\.leadingTrivia, []))
-                )
+            numberOfCorrections += 1
+            return signature.with(\.parameterClause, split(clause))
+        }
+
+        /// The signature with its parameters back on one line, or `nil` when they cannot come back.
+        ///
+        /// Decided after descending: a default value coming back to one line is what can make the whole
+        /// list joinable, and deciding first would leave that for a second run over the file.
+        private func joining(_ signature: FunctionSignatureSyntax) -> FunctionSignatureSyntax? {
+            let clause = signature.parameterClause
+            guard configuration.requiresSingleLine, clause.canRejoinOneLine(within: configuration) else {
+                return nil
             }
-            // Neither one line nor one per line, which is the shape this rule is named for.
-            if parameters.isSplitUnevenly, !parameters.containsComment {
-                numberOfCorrections += 1
-                return signature.with(\.parameterClause, split(clause))
-            }
-            return signature
+            numberOfCorrections += 1
+            return signature.with(
+                \.parameterClause,
+                clause
+                    .with(\.leftParen, clause.leftParen.with(\.trailingTrivia, []))
+                    .with(\.parameters, clause.parameters.joinedOnOneLine(startingWith: []))
+                    .with(\.rightParen, clause.rightParen.with(\.leadingTrivia, []))
+            )
         }
 
         private func split(_ clause: FunctionParameterClauseSyntax) -> FunctionParameterClauseSyntax {
@@ -128,11 +157,11 @@ extension MultilineParametersConfiguration: SingleLineAllowance {}
 private extension FunctionParameterClauseSyntax {
     /// Whether the parameters can come back to one line. The closing paren is checked here because a comment
     /// before it would be lost.
-    func canRejoinOneLine(_ configuration: MultilineParametersConfiguration) -> Bool {
+    func canRejoinOneLine(within allowance: some SingleLineAllowance) -> Bool {
         !parameters.isEmpty
             && !parameters.isOnOneLine
-            && !parameters.exceedsSingleLineAllowance(configuration)
+            && !parameters.exceedsSingleLineAllowance(allowance)
             && !rightParen.leadingTrivia.containsComment
-            && parameters.canRejoinOneLine(configuration)
+            && parameters.canRejoinOneLine
     }
 }

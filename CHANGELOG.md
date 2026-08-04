@@ -40,6 +40,12 @@
   too. `func` and `init` only, matching what the rule already reports.  
   [Elvis Nunez](https://github.com/3lvis)
 
+* Decide the three multiline shape rules' joins bottom-up, so one `--fix`
+  reaches a fixed point. An inner list coming back to one line is what makes
+  the list around it joinable, and deciding the outer one first left that for a
+  second run over the file.  
+  [Elvis Nunez](https://github.com/3lvis)
+
 * Make the `multiline_call_arguments` rule correctable, and add a
   `requires_single_line` option so a list within
   `max_number_of_single_line_parameters` is brought back to one line. Deciding

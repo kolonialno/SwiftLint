@@ -76,7 +76,7 @@ private extension MultilineConditionsRule {
             }
             if configuration.requiresSingleLine,
                !conditions.exceedsSingleLineAllowance(configuration),
-               conditions.canRejoinOneLine(configuration) {
+               conditions.canRejoinOneLine {
                 return Reason.singleLineRequiredWithinAllowance
             }
             return conditions.isSplitAfterTheFirst ? nil : Reason.eachConditionMustStartOnOwnLine
@@ -85,71 +85,106 @@ private extension MultilineConditionsRule {
 
     final class Rewriter: ViolationsSyntaxRewriter<ConfigurationType> {
         override func visit(_ node: IfExprSyntax) -> ExprSyntax {
-            guard let conditions = reshaped(node.conditions, of: node) else {
-                return super.visit(node)
+            if let split = splitting(node.conditions, of: node) {
+                return super.visit(reshaped(node, with: split))
             }
-            return super.visit(
-                node
-                    .with(\.ifKeyword, node.ifKeyword.with(\.trailingTrivia, .space))
-                    .with(\.conditions, conditions)
-                    .with(\.body, node.body.openingBracePlaced(after: conditions, of: node))
-            )
+            let visited = super.visit(node)
+            guard let expression = visited.as(IfExprSyntax.self),
+                  let joined = joining(expression.conditions)
+            else {
+                return visited
+            }
+            return ExprSyntax(reshaped(expression, with: joined))
         }
 
         override func visit(_ node: GuardStmtSyntax) -> StmtSyntax {
-            guard let conditions = reshaped(node.conditions, of: node) else {
-                return super.visit(node)
+            if let split = splitting(node.conditions, of: node) {
+                return super.visit(reshaped(node, with: split))
             }
-            return super.visit(
-                node
-                    .with(\.guardKeyword, node.guardKeyword.with(\.trailingTrivia, .space))
-                    .with(\.conditions, conditions)
-                    .with(
-                        \.elseKeyword,
-                        node.elseKeyword.with(
-                            \.leadingTrivia,
-                            conditions.isOnOneLine ? .space : .newline + node.indentationOfOwnLine
-                        )
-                    )
-            )
+            let visited = super.visit(node)
+            guard let statement = visited.as(GuardStmtSyntax.self),
+                  let joined = joining(statement.conditions)
+            else {
+                return visited
+            }
+            return StmtSyntax(reshaped(statement, with: joined))
         }
 
         override func visit(_ node: WhileStmtSyntax) -> StmtSyntax {
-            guard let conditions = reshaped(node.conditions, of: node) else {
-                return super.visit(node)
+            if let split = splitting(node.conditions, of: node) {
+                return super.visit(reshaped(node, with: split))
             }
-            return super.visit(
-                node
-                    .with(\.whileKeyword, node.whileKeyword.with(\.trailingTrivia, .space))
-                    .with(\.conditions, conditions)
-                    .with(\.body, node.body.openingBracePlaced(after: conditions, of: node))
-            )
+            let visited = super.visit(node)
+            guard let statement = visited.as(WhileStmtSyntax.self),
+                  let joined = joining(statement.conditions)
+            else {
+                return visited
+            }
+            return StmtSyntax(reshaped(statement, with: joined))
         }
 
-        /// The conditions in the shape their count asks for, or `nil` when they already have it.
-        private func reshaped(
+        /// Decided before descending, so that a nested list can read the line this puts it on.
+        private func splitting(
             _ conditions: ConditionElementListSyntax,
             of node: some SyntaxProtocol
         ) -> ConditionElementListSyntax? {
-            guard !conditions.isEmpty else {
+            guard conditions.count > 1,
+                  conditions.exceedsSingleLineAllowance(configuration),
+                  !conditions.isSplitAfterTheFirst,
+                  !conditions.containsComment
+            else {
                 return nil
             }
-            let exceedsAllowance = conditions.exceedsSingleLineAllowance(configuration)
-            if exceedsAllowance,
-               conditions.count > 1,
-               !conditions.isSplitAfterTheFirst,
-               !conditions.containsComment {
-                numberOfCorrections += 1
-                return conditions.splitAfterTheFirst(from: node.indentationOfOwnLine)
+            numberOfCorrections += 1
+            return conditions.splitAfterTheFirst(from: node.indentationOfOwnLine)
+        }
+
+        /// Decided after descending: a call inside a condition coming back to one line is what can make the
+        /// whole list joinable, and deciding first would leave that for a second run over the file.
+        private func joining(_ conditions: ConditionElementListSyntax) -> ConditionElementListSyntax? {
+            guard configuration.requiresSingleLine,
+                  !conditions.isEmpty,
+                  !conditions.exceedsSingleLineAllowance(configuration),
+                  !conditions.isOnOneLine,
+                  conditions.canRejoinOneLine
+            else {
+                return nil
             }
-            if configuration.requiresSingleLine,
-               !exceedsAllowance,
-               !conditions.isOnOneLine,
-               conditions.canRejoinOneLine(configuration) {
-                numberOfCorrections += 1
-                return conditions.joinedOnOneLine(startingWith: [])
-            }
-            return nil
+            numberOfCorrections += 1
+            return conditions.joinedOnOneLine(startingWith: [])
+        }
+
+        private func reshaped(_ node: IfExprSyntax, with conditions: ConditionElementListSyntax) -> IfExprSyntax {
+            node
+                .with(\.ifKeyword, node.ifKeyword.with(\.trailingTrivia, .space))
+                .with(\.conditions, conditions)
+                .with(\.body, node.body.openingBracePlaced(after: conditions, of: node))
+        }
+
+        private func reshaped(
+            _ node: GuardStmtSyntax,
+            with conditions: ConditionElementListSyntax
+        ) -> GuardStmtSyntax {
+            node
+                .with(\.guardKeyword, node.guardKeyword.with(\.trailingTrivia, .space))
+                .with(\.conditions, conditions)
+                .with(
+                    \.elseKeyword,
+                    node.elseKeyword.with(
+                        \.leadingTrivia,
+                        conditions.isOnOneLine ? .space : .newline + node.indentationOfOwnLine
+                    )
+                )
+        }
+
+        private func reshaped(
+            _ node: WhileStmtSyntax,
+            with conditions: ConditionElementListSyntax
+        ) -> WhileStmtSyntax {
+            node
+                .with(\.whileKeyword, node.whileKeyword.with(\.trailingTrivia, .space))
+                .with(\.conditions, conditions)
+                .with(\.body, node.body.openingBracePlaced(after: conditions, of: node))
         }
     }
 }
