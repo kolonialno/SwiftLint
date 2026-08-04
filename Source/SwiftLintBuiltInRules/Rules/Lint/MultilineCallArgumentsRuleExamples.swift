@@ -302,6 +302,27 @@ struct MultilineCallArgumentsRuleExamples {
                 // pattern — must be ignored
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
+        """
+            foo(
+                // why
+                a: 1,
+                b: 2
+            )
+            """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]),
+        """
+            foo(
+                a: 1,
+                action: {
+                    bar()
+                }
+            )
+            """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]),
+        """
+            foo(
+                a: 1,
+                b: 2
+            )
+            """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
     ])
 
     static let triggeringExamples: [Example] = #examples([
@@ -454,6 +475,160 @@ struct MultilineCallArgumentsRuleExamples {
                 _ = foo(a: 1, b: 2, ↓c: 3)
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
+        """
+            foo(
+                ↓a: 1,
+                b: 2
+            )
+            """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]),
+    ])
+
+    static let corrections: [Example: Example] = #corrections([
+        """
+        foo(a: 1, b: 2, c: 3)
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            foo(
+                a: 1,
+                b: 2,
+                c: 3
+            )
+            """,
+
+        """
+        foo(a: 1, b: 2)
+        """.asExample(configuration: ["allows_single_line": false]): """
+            foo(
+                a: 1,
+                b: 2
+            )
+            """,
+
+        // Two arguments are within the allowance, so the call keeps the shape it has.
+        """
+        foo(a: 1, b: 2)
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            foo(a: 1, b: 2)
+            """,
+
+        // A list nested in one being reshaped indents from the line the reshape puts it on, which is what
+        // makes the rewrite composable: it can move a list and still lay out what is inside it.
+        """
+        let row = Row(product: product, quantity: Quantity(value: 1, unit: .piece, isEstimate: false), onTap: onTap)
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            let row = Row(
+                product: product,
+                quantity: Quantity(
+                    value: 1,
+                    unit: .piece,
+                    isEstimate: false
+                ),
+                onTap: onTap
+            )
+            """,
+
+        """
+        struct S {
+            func f() {
+                if condition {
+                    return string.boundingRect(with: rect, options: options, attributes: attributes, context: nil)
+                }
+            }
+        }
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            struct S {
+                func f() {
+                    if condition {
+                        return string.boundingRect(
+                            with: rect,
+                            options: options,
+                            attributes: attributes,
+                            context: nil
+                        )
+                    }
+                }
+            }
+            """,
+
+        // The join direction. Both shapes follow from the argument count, so a call that loses an argument
+        // comes back to one line instead of keeping the shape it had when it was longer.
+        """
+        foo(
+            a: 1,
+            b: 2
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            foo(a: 1, b: 2)
+            """,
+
+        // A trailing comma reads as a shape marker only while the list is split.
+        """
+        foo(
+            a: 1,
+            b: 2,
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            foo(a: 1, b: 2)
+            """,
+
+        // A comment inside the list is a line of its own, so the breaks holding it stay.
+        """
+        foo(
+            // why
+            a: 1,
+            b: 2
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            foo(
+                // why
+                a: 1,
+                b: 2
+            )
+            """,
+
+        """
+        foo(
+            a: 1,
+            action: {
+                bar()
+            }
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            foo(
+                a: 1,
+                action: {
+                    bar()
+                }
+            )
+            """,
+
+        // A join yields to what it contains: joining here would put a call that spans lines on a line it
+        // shares with another argument.
+        """
+        outer(
+            a: inner(x: 1, y: 2, z: 3),
+            b: 2
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            outer(
+                a: inner(
+                    x: 1,
+                    y: 2,
+                    z: 3
+                ),
+                b: 2
+            )
+            """,
+
+        // A multiline string argument means the list already spans lines, so there is no single line to break.
+        """
+        log(Message(text: \"""
+            a
+            \""", level: .info), destination: .console)
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            log(Message(text: \"""
+                a
+                \""", level: .info), destination: .console)
+            """,
     ])
 }
 // swiftlint:enable file_length

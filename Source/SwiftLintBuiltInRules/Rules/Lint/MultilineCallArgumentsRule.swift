@@ -1,7 +1,8 @@
+import SwiftBasicFormat
 import SwiftLintCore
 import SwiftSyntax
 
-@SwiftSyntaxRule(optIn: true)
+@SwiftSyntaxRule(explicitRewriter: true, optIn: true)
 struct MultilineCallArgumentsRule: Rule {
     var configuration = MultilineCallArgumentsConfiguration()
 
@@ -18,6 +19,9 @@ struct MultilineCallArgumentsRule: Rule {
 
         static let newlineRequiredAfterCommaInMultilineCall =
             "In multi-line calls, a newline is required after each comma"
+
+        static let singleLineRequiredWithinAllowance =
+            "Arguments within the single-line allowance must be on one line"
     }
 
     static let description = RuleDescription(
@@ -30,7 +34,8 @@ struct MultilineCallArgumentsRule: Rule {
         """,
         kind: .style,
         nonTriggeringExamples: MultilineCallArgumentsRuleExamples.nonTriggeringExamples,
-        triggeringExamples: MultilineCallArgumentsRuleExamples.triggeringExamples
+        triggeringExamples: MultilineCallArgumentsRuleExamples.triggeringExamples,
+        corrections: MultilineCallArgumentsRuleExamples.corrections
     )
 }
 
@@ -50,6 +55,11 @@ private extension MultilineCallArgumentsRule {
         override func visitPost(_ node: FunctionCallExprSyntax) {
             // Ignore calls that are part of pattern-matching syntax (patterns only, not bodies).
             guard !node.isInPatternMatchingPatternPosition else { return }
+
+            if let violation = splitWithinAllowanceViolation(in: node) {
+                violations.append(violation)
+                return
+            }
 
             let args = node.arguments
             guard args.count > 1 else { return }
@@ -161,6 +171,22 @@ private extension MultilineCallArgumentsRule {
             return nil
         }
 
+        /// A list within the allowance that is split anyway, which the rewriter brings back to one line.
+        private func splitWithinAllowanceViolation(in node: FunctionCallExprSyntax) -> ReasonedRuleViolation? {
+            guard configuration.requiresSingleLine,
+                  let first = node.arguments.first,
+                  !node.argumentsAreOnOneLine,
+                  !node.exceedsSingleLineAllowance(configuration),
+                  node.argumentsCanRejoinOneLine(configuration)
+            else {
+                return nil
+            }
+            return ReasonedRuleViolation(
+                position: startPosition(of: first),
+                reason: Reason.singleLineRequiredWithinAllowance
+            )
+        }
+
         private func startPosition(of argument: LabeledExprSyntax) -> AbsolutePosition {
             if let label = argument.label, label.presence != .missing {
                 return label.positionAfterSkippingLeadingTrivia
@@ -178,6 +204,125 @@ private extension MultilineCallArgumentsRule {
     }
 }
 
+private extension MultilineCallArgumentsRule {
+    /// Writes the shape out in full rather than inserting a single break, because a formatter running
+    /// afterwards decides the rest of the layout for a whole expression at once — hand it half a shape and
+    /// it resolves nested lists its own way, which is how a corrector and a formatter end up trading the
+    /// same edit forever.
+    final class Rewriter: ViolationsSyntaxRewriter<ConfigurationType> {
+        override func visit(_ node: FunctionCallExprSyntax) -> ExprSyntax {
+            guard !node.isInPatternMatchingPatternPosition, node.rightParen != nil else {
+                return super.visit(node)
+            }
+            let exceedsAllowance = node.exceedsSingleLineAllowance(configuration)
+            if node.arguments.count > 1, exceedsAllowance, node.argumentsAreOnOneLine {
+                numberOfCorrections += 1
+                return super.visit(split(node))
+            }
+            if configuration.requiresSingleLine, !exceedsAllowance, !node.argumentsAreOnOneLine,
+               !node.arguments.isEmpty, node.argumentsCanRejoinOneLine(configuration) {
+                numberOfCorrections += 1
+                return super.visit(joined(node))
+            }
+            return super.visit(node)
+        }
+
+        private func split(_ node: FunctionCallExprSyntax) -> FunctionCallExprSyntax {
+            // Indentation read from the tree rather than from source columns, so a nested list still lands
+            // right: recursion happens after the rewrite, so by the time an inner call is visited it sits on
+            // the line this rewrite just gave it.
+            let indentation = node.firstToken(viewMode: .sourceAccurate)?.indentationOfLine ?? []
+            let arguments = LabeledExprListSyntax(
+                node.arguments.map { argument in
+                    argument
+                        .with(\.leadingTrivia, .newline + indentation + .spaces(4))
+                        .with(\.trailingComma, argument.trailingComma?.with(\.trailingTrivia, []))
+                }
+            )
+            return node
+                .with(\.arguments, arguments)
+                .with(\.rightParen, node.rightParen?.with(\.leadingTrivia, .newline + indentation))
+        }
+
+        /// Deciding both directions is what makes the shape a function of the argument count rather than of
+        /// the call's history: a call that loses an argument comes back to one line instead of keeping the
+        /// shape it had when it was longer.
+        private func joined(_ node: FunctionCallExprSyntax) -> FunctionCallExprSyntax {
+            let last = node.arguments.count - 1
+            let arguments = LabeledExprListSyntax(
+                node.arguments.enumerated().map { index, argument in
+                    // A trailing comma on the last argument reads as a shape marker only while the list is
+                    // split; on one line it is noise, so the join drops it.
+                    let comma = index == last
+                        ? nil
+                        : argument.trailingComma?.with(\.leadingTrivia, []).with(\.trailingTrivia, [])
+                    return argument
+                        .with(\.leadingTrivia, index == 0 ? [] : .space)
+                        .with(\.trailingTrivia, [])
+                        .with(\.trailingComma, comma)
+                }
+            )
+            return node
+                .with(\.leftParen, node.leftParen?.with(\.trailingTrivia, []))
+                .with(\.arguments, arguments)
+                .with(\.rightParen, node.rightParen?.with(\.leadingTrivia, []))
+        }
+    }
+}
+
+private extension FunctionCallExprSyntax {
+    /// Read from trivia rather than from source locations, because a rewrite moves everything after it and
+    /// the location converter still answers from the file as it was read. A list nested in one that has
+    /// already been reshaped is exactly the case that matters, and locations there are stale.
+    var argumentsAreOnOneLine: Bool {
+        arguments.tokens(viewMode: .sourceAccurate).allSatisfy { token in
+            !token.leadingTrivia.containsNewline
+                && !token.trailingTrivia.containsNewline
+                && !token.text.contains("\n")
+        }
+    }
+
+    func exceedsSingleLineAllowance(_ configuration: MultilineCallArgumentsConfiguration) -> Bool {
+        if !configuration.allowsSingleLine {
+            return true
+        }
+        guard let maximum = configuration.maxNumberOfSingleLineParameters else {
+            return false
+        }
+        return arguments.count > maximum
+    }
+
+    /// Whether the breaks in this list hold nothing a join would destroy — no comment to lose, no closure
+    /// body, no multiline string — since a join only takes back the breaks this rule would have made.
+    func argumentsCanRejoinOneLine(_ configuration: MultilineCallArgumentsConfiguration) -> Bool {
+        guard rightParen?.leadingTrivia.containsComment != true else {
+            return false
+        }
+        return arguments.allSatisfy { argument in
+            !argument.trimmedDescription.contains("\n")
+                && !argument.leadingTrivia.containsComment
+                && !argument.trailingTrivia.containsComment
+                && !argument.containsCallNeedingItsOwnShape(configuration)
+        }
+    }
+}
+
+private extension SyntaxProtocol {
+    /// A join yields to anything inside it that this rule will split, since a list on one line whose
+    /// argument spans several reads worse than the split list it came from.
+    func containsCallNeedingItsOwnShape(_ configuration: MultilineCallArgumentsConfiguration) -> Bool {
+        children(viewMode: .sourceAccurate).contains { child in
+            if let call = child.as(FunctionCallExprSyntax.self),
+               call.arguments.count > 1,
+               call.exceedsSingleLineAllowance(configuration),
+               call.argumentsAreOnOneLine {
+                return true
+            }
+            return child.containsCallNeedingItsOwnShape(configuration)
+        }
+    }
+}
+
 private extension FunctionCallExprSyntax {
     /// Returns `true` if this call appears in a pattern position (e.g., `case .foo(a)`).
     ///
@@ -188,5 +333,15 @@ private extension FunctionCallExprSyntax {
     /// - `catch .foo(1, 2)` → parent is ExpressionPatternSyntax
     var isInPatternMatchingPatternPosition: Bool {
         parent?.is(ExpressionPatternSyntax.self) == true
+    }
+}
+
+private extension Trivia {
+    var containsNewline: Bool {
+        contains(where: \.isNewline)
+    }
+
+    var containsComment: Bool {
+        contains(where: \.isComment)
     }
 }

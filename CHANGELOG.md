@@ -24,6 +24,16 @@
   them across the built-in rules.  
   [ZevEisenberg](https://github.com/ZevEisenberg)
 
+* Make the `multiline_call_arguments` rule correctable, and add a
+  `requires_single_line` option so a list within
+  `max_number_of_single_line_parameters` is brought back to one line. Deciding
+  both directions makes a call's shape follow from its argument count rather
+  than from its history: adding an argument splits the list, removing one joins
+  it again. A join stands down when the breaks are carrying a comment, a
+  closure body, a multiline string, or a nested call that needs a shape of its
+  own.  
+  [Elvis Nunez](https://github.com/3lvis)
+
 * Add `allow_compact_empty_blocks` option to the `no_empty_block` rule to
   allow empty blocks written compactly as `{}` while still flagging empty
   blocks with any whitespace or newlines between the braces.  
