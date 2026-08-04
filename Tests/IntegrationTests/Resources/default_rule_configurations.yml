@@ -713,6 +713,8 @@ multiline_call_arguments:
     correctable: true
 multiline_conditions:
   severity: warning
+  allows_single_line: true
+  requires_single_line: false
   meta:
     opt-in: true
     correctable: true
