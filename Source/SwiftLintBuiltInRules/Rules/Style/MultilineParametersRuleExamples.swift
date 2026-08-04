@@ -1,3 +1,4 @@
+// swiftlint:disable file_length type_body_length
 import SwiftLintCore
 
 internal struct MultilineParametersRuleExamples {
@@ -360,4 +361,77 @@ internal struct MultilineParametersRuleExamples {
         func ↓foo(param1: Int, param2: Bool, param3: [String]) { }
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
     ])
+
+    static let corrections: [Example: Example] = #corrections([
+        """
+        func foo(param1: Int, param2: Bool, param3: [String]) {}
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            func foo(
+                param1: Int,
+                param2: Bool,
+                param3: [String]
+            ) {}
+            """,
+
+        // The join direction: a signature that loses a parameter comes back to one line.
+        """
+        func foo(
+            param1: Int,
+            param2: Bool
+        ) {}
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            func foo(param1: Int, param2: Bool) {}
+            """,
+
+        """
+        init(
+            param1: Int,
+            param2: Bool
+        ) {}
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            init(param1: Int, param2: Bool) {}
+            """,
+
+        // Neither one line nor one per line, which is the shape this rule is named for.
+        """
+        func foo(param1: Int,
+                 param2: Bool, param3: [String]) {}
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            func foo(
+                param1: Int,
+                param2: Bool,
+                param3: [String]
+            ) {}
+            """,
+
+        // A comment between the parameters is a line of its own, so the breaks holding it stay.
+        """
+        func foo(
+            // the first one
+            param1: Int,
+            param2: Bool
+        ) {}
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            func foo(
+                // the first one
+                param1: Int,
+                param2: Bool
+            ) {}
+            """,
+
+        """
+        struct S {
+            func foo(param1: Int, param2: Bool, param3: [String]) {}
+        }
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
+            struct S {
+                func foo(
+                    param1: Int,
+                    param2: Bool,
+                    param3: [String]
+                ) {}
+            }
+            """,
+    ])
 }
+// swiftlint:enable file_length type_body_length
