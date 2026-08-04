@@ -178,6 +178,14 @@ struct MultilineCallArgumentsRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct MultilineConditionsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(MultilineConditionsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct MultilineFunctionChainsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct MultilineParametersBracketsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(MultilineParametersBracketsRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct MultilineParametersRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(MultilineParametersRule.description)
     }
 }

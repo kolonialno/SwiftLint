@@ -92,7 +92,7 @@ private extension MultilineParametersRule {
                 return signature
             }
             let exceedsAllowance = parameters.exceedsSingleLineAllowance(configuration)
-            if parameters.count > 1, exceedsAllowance, parameters.isOnOneLine {
+            if parameters.count > 1, exceedsAllowance, parameters.isOnOneLine, !parameters.containsComment {
                 numberOfCorrections += 1
                 return signature.with(\.parameterClause, split(clause))
             }
@@ -102,12 +102,12 @@ private extension MultilineParametersRule {
                     \.parameterClause,
                     clause
                         .with(\.leftParen, clause.leftParen.with(\.trailingTrivia, []))
-                        .with(\.parameters, parameters.joinedOnOneLine())
+                        .with(\.parameters, parameters.joinedOnOneLine(startingWith: []))
                         .with(\.rightParen, clause.rightParen.with(\.leadingTrivia, []))
                 )
             }
             // Neither one line nor one per line, which is the shape this rule is named for.
-            if parameters.isSplitUnevenly {
+            if parameters.isSplitUnevenly, !parameters.containsComment {
                 numberOfCorrections += 1
                 return signature.with(\.parameterClause, split(clause))
             }

@@ -707,9 +707,15 @@ multiline_arguments_brackets:
 multiline_call_arguments:
   severity: warning
   allows_single_line: true
+  requires_single_line: false
   meta:
     opt-in: true
-    correctable: false
+    correctable: true
+multiline_conditions:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: true
 multiline_function_chains:
   severity: warning
   meta:
@@ -723,9 +729,10 @@ multiline_literal_brackets:
 multiline_parameters:
   severity: warning
   allows_single_line: true
+  requires_single_line: false
   meta:
     opt-in: true
-    correctable: false
+    correctable: true
 multiline_parameters_brackets:
   severity: warning
   meta:

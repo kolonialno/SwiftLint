@@ -211,7 +211,10 @@ private extension MultilineCallArgumentsRule {
                 return super.visit(node)
             }
             let exceedsAllowance = node.arguments.exceedsSingleLineAllowance(configuration)
-            if node.arguments.count > 1, exceedsAllowance, node.arguments.isOnOneLine {
+            if node.arguments.count > 1,
+               exceedsAllowance,
+               node.arguments.isOnOneLine,
+               !node.arguments.containsComment {
                 numberOfCorrections += 1
                 let indentation = node.indentationOfOwnLine
                 return super.visit(
@@ -220,13 +223,15 @@ private extension MultilineCallArgumentsRule {
                         .with(\.rightParen, node.rightParen?.with(\.leadingTrivia, .newline + indentation))
                 )
             }
-            if configuration.requiresSingleLine, !exceedsAllowance, !node.arguments.isOnOneLine,
+            if configuration.requiresSingleLine,
+               !exceedsAllowance,
+               !node.arguments.isOnOneLine,
                node.argumentsCanRejoinOneLine(configuration) {
                 numberOfCorrections += 1
                 return super.visit(
                     node
                         .with(\.leftParen, node.leftParen?.with(\.trailingTrivia, []))
-                        .with(\.arguments, node.arguments.joinedOnOneLine())
+                        .with(\.arguments, node.arguments.joinedOnOneLine(startingWith: []))
                         .with(\.rightParen, node.rightParen?.with(\.leadingTrivia, []))
                 )
             }

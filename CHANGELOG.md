@@ -24,6 +24,15 @@
   them across the built-in rules.  
   [ZevEisenberg](https://github.com/ZevEisenberg)
 
+* Add an opt-in, correctable `multiline_conditions` rule: the conditions of an
+  `if`, `guard` or `while` are either on one line or one per line after the
+  first, with the same `max_number_of_single_line_parameters` allowance and
+  `requires_single_line` option as the call and parameter rules. The break goes
+  after the first condition rather than after the keyword because swift-format
+  pulls a lone `if` or `while` back down onto its first condition, so a shape
+  that broke there could not survive being formatted.  
+  [Elvis Nunez](https://github.com/3lvis)
+
 * Make the `multiline_parameters` rule correctable, with the same
   `requires_single_line` option, so a declaration's parameters take the shape
   their count asks for in both directions. A signature that is neither on one

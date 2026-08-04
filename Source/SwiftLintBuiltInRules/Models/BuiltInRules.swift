@@ -123,6 +123,7 @@ public let builtInRules: [any Rule.Type] = [
     MultilineArgumentsBracketsRule.self,
     MultilineArgumentsRule.self,
     MultilineCallArgumentsRule.self,
+    MultilineConditionsRule.self,
     MultilineFunctionChainsRule.self,
     MultilineLiteralBracketsRule.self,
     MultilineParametersBracketsRule.self,
