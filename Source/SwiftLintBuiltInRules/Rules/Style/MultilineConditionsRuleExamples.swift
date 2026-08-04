@@ -32,6 +32,18 @@ internal struct MultilineConditionsRuleExamples {
             return
         }
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
+        // A lone condition that spans lines has nothing to align against, so the keyword keeps its own line.
+        """
+        guard
+            let path = search(
+                directory,
+                .userDomainMask,
+                true
+            ).first
+        else {
+            return
+        }
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
     ])
 
     static let triggeringExamples: [Example] = #examples([

@@ -9,7 +9,9 @@ public struct Version: VersionComparable, Sendable {
     }
 
     /// The current SwiftLint version.
-    public static let current = Self(value: "0.65.0")
+    /// Suffixed because a consumer asserts the linter it runs is the one the repo pins, and a fork that
+    /// reports an upstream version cannot be told apart from an upstream build of it.
+    public static let current = Self(value: "0.65.0-oda.1")
 
     /// Public initializer.
     ///

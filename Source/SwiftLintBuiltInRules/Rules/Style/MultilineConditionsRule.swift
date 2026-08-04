@@ -79,7 +79,12 @@ private extension MultilineConditionsRule {
                conditions.canRejoinOneLine {
                 return Reason.singleLineRequiredWithinAllowance
             }
-            return conditions.isSplitAfterTheFirst ? nil : Reason.eachConditionMustStartOnOwnLine
+            // One condition has nothing to align against, and a lone condition that spans lines reads
+            // better below the keyword than beside it — so the shape only applies from two.
+            guard conditions.count > 1, !conditions.isSplitAfterTheFirst else {
+                return nil
+            }
+            return Reason.eachConditionMustStartOnOwnLine
         }
     }
 
