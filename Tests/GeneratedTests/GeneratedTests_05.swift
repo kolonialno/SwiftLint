@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct JoinedDefaultParameterRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(JoinedDefaultParameterRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct KeyPathOnlyWhereTheAPITakesOneRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct MultilineArgumentsBracketsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(MultilineArgumentsBracketsRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct MultilineArgumentsRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(MultilineArgumentsRule.description)
     }
 }

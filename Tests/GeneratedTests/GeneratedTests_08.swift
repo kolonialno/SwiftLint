@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct PreferZeroOverExplicitInitRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PreferZeroOverExplicitInitRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct PrefixedTopLevelConstantRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct RedundantStringEnumValueRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(RedundantStringEnumValueRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct RedundantTypeAnnotationRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(RedundantTypeAnnotationRule.description)
     }
 }

@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct ConditionalReturnsOnNewlineRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ConditionalReturnsOnNewlineRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ContainsOverFilterCountRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct EmptyCollectionLiteralRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(EmptyCollectionLiteralRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct EmptyCountRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(EmptyCountRule.description)
     }
 }

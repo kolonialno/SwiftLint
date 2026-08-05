@@ -587,6 +587,11 @@ joined_default_parameter:
   meta:
     opt-in: true
     correctable: true
+key_path_only_where_the_api_takes_one:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: true
 keychain_built_only_at_the_root:
   severity: warning
   meta:

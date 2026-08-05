@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct FirstWhereRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(FirstWhereRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct FlatMapOverMapReduceRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct IsDisjointRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(IsDisjointRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct JoinedDefaultParameterRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(JoinedDefaultParameterRule.description)
     }
 }

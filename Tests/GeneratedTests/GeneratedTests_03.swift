@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct EmptyCountRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(EmptyCountRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct EmptyEnumArgumentsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct FinalTestCaseRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(FinalTestCaseRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct FirstWhereRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(FirstWhereRule.description)
     }
 }

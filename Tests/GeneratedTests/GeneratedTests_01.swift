@@ -42,6 +42,14 @@ struct ArrayInitRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct AssetsComeFromTheGeneratedEnumRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(AssetsComeFromTheGeneratedEnumRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct AsyncWithoutAwaitRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct ComputedAccessorsOrderRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(ComputedAccessorsOrderRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ConditionalReturnsOnNewlineRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ConditionalReturnsOnNewlineRule.description)
     }
 }
