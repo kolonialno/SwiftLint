@@ -42,10 +42,6 @@ private extension MultilineParametersRule {
             guard parameterPositions.isNotEmpty else {
                 return false
             }
-            guard !signature.parameterClause.parameters.readsAsOneValue else {
-                // One value's parts are horizontal at any length, so neither direction has anything to say.
-                return false
-            }
 
             var numberOfParameters = 0
             var linesWithParameters: Set<Int> = []

@@ -76,10 +76,6 @@ private extension MultilineCallArgumentsRule {
             arguments: LabeledExprListSyntax
         ) -> ReasonedRuleViolation? {
             guard let firstPos = argumentPositions.first else { return nil }
-            guard !arguments.readsAsOneValue else {
-                // One value's parts are horizontal at any length, so neither direction has anything to say.
-                return nil
-            }
 
             let firstLine = line(for: firstPos)
             var allOnSameLine = true
