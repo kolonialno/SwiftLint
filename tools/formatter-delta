@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+#
+# Measures how far this linter's --fix output is from swift-format's, which is the exit criterion for
+# owning the formatting ourselves: when the delta over a real repository is zero, swift-format leaves
+# that repository's pipeline and Xcode's Format File still agrees with the tree.
+#
+#   tools/formatter-delta <repo> [sample-size]
+#
+# Both tools read the same deliberately mangled input — every indent halved, which is the one thing
+# swift-format still owns here — so the comparison is between the two outputs, never against the
+# original file.
+set -euo pipefail
+repo=${1:?usage: tools/formatter-delta <repo> [sample-size]}
+sample=${2:-0}
+fork=$(cd "$(dirname "$0")/.." && pwd)
+binary="$fork/.build/release/swiftlint"
+[ -x "$binary" ] || { echo "Build first: swift build -c release --product swiftlint" >&2; exit 1; }
+formatter=$(xcrun --find swift-format)
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+
+python3 - "$repo" "$work" "$sample" <<'PY'
+import pathlib, random, re, sys
+repo, work, sample = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), int(sys.argv[3])
+skip = {".build", "build", "Generated", "DerivedData", "SourcePackages", "GeneratedSources", ".git"}
+files = [p for p in repo.rglob("*.swift") if not skip & set(p.relative_to(repo).parts)]
+random.seed(7)
+chosen = random.sample(files, sample) if sample and sample < len(files) else files
+for index, path in enumerate(sorted(chosen)):
+    halved = "\n".join(
+        re.sub(r"^((?:    )+)", lambda match: "  " * (len(match.group(1)) // 4), line)
+        for line in path.read_text().split("\n"))
+    for side in ("ours", "theirs"):
+        target = work / side / f"{index:05}.swift"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(halved)
+    (work / "names" / f"{index:05}").parent.mkdir(parents=True, exist_ok=True)
+    (work / "names" / f"{index:05}").write_text(str(path.relative_to(repo)))
+print(f"{len(chosen)} files")
+PY
+
+# The rules under construction are opted into here rather than in the repository, so the delta can be
+# measured long before the repository trusts them.
+python3 - "$repo/.swiftlint.yml" "$work/ours/.swiftlint.yml" <<'PY'
+import pathlib, sys
+source, target = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+text = source.read_text().replace("opt_in_rules:\n", "opt_in_rules:\n  - indentation\n", 1)
+target.write_text(text)
+PY
+cp "$repo/.swift-format" "$work/theirs/.swift-format"
+(cd "$work/ours" && "$binary" lint --fix --quiet >/dev/null 2>&1 || true)
+(cd "$work/theirs" && "$formatter" format --in-place --parallel ./*.swift)
+
+differing=0 total=0
+: > "$work/report"
+for ours in "$work"/ours/*.swift; do
+    name=$(basename "$ours" .swift)
+    total=$((total + 1))
+    if ! diff -q "$ours" "$work/theirs/$name.swift" >/dev/null; then
+        differing=$((differing + 1))
+        printf '%s\t%s\n' "$(cat "$work/names/$name")" "$(diff "$ours" "$work/theirs/$name.swift" | grep -c '^<' || true)" >> "$work/report"
+    fi
+done
+echo "files differing from swift-format: $differing / $total"
+if [ "$differing" -gt 0 ]; then
+    echo "worst offenders (file, differing lines):"
+    sort -k2 -rn -t$'\t' "$work/report" | head -10
+    echo
+    echo "first difference:"
+    first=$(head -1 "$work/report" | cut -f1)
+    for ours in "$work"/ours/*.swift; do
+        name=$(basename "$ours" .swift)
+        if [ "$(cat "$work/names/$name")" = "$first" ]; then
+            diff "$ours" "$work/theirs/$name.swift" | head -20
+            break
+        fi
+    done
+fi

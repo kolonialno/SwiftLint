@@ -97,6 +97,7 @@ public let builtInRules: [any Rule.Type] = [
     ImplicitlyUnwrappedOptionalRule.self,
     InclusiveLanguageRule.self,
     IncompatibleConcurrencyAnnotationRule.self,
+    IndentationRule.self,
     IndentationWidthRule.self,
     InvalidSwiftLintCommandRule.self,
     InvisibleCharacterRule.self,

@@ -170,6 +170,14 @@ struct IncompatibleConcurrencyAnnotationRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct IndentationRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(IndentationRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct IndentationWidthRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct IsDisjointRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(IsDisjointRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct JoinedDefaultParameterRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(JoinedDefaultParameterRule.description)
     }
 }

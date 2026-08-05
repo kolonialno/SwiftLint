@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct MultilineArgumentsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(MultilineArgumentsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct MultilineCallArgumentsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct NoPresentationStateOutsideNavigationRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(NoPresentationStateOutsideNavigationRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct NoPrintInAppCodeRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(NoPrintInAppCodeRule.description)
     }
 }
