@@ -10,6 +10,54 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct NoUserDefaultsInAppCodeRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NoUserDefaultsInAppCodeRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct NonOptionalStringDataConversionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NonOptionalStringDataConversionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct NonOverridableClassDeclarationRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NonOverridableClassDeclarationRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct NotificationCenterDetachmentRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NotificationCenterDetachmentRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct NumberSeparatorRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NumberSeparatorRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ObjectLiteralRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ObjectLiteralRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct OneDeclarationPerFileRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -158,53 +206,5 @@ struct PrefixedTopLevelConstantRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(PrefixedTopLevelConstantRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct PrivateActionRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(PrivateActionRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct PrivateOutletRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(PrivateOutletRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct PrivateOverFilePrivateRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(PrivateOverFilePrivateRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct PrivateSubjectRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(PrivateSubjectRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct PrivateSwiftUIStatePropertyRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(PrivateSwiftUIStatePropertyRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct PrivateUnitTestRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(PrivateUnitTestRule.description)
     }
 }

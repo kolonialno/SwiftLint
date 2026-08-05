@@ -490,6 +490,12 @@ generic_type_name:
   meta:
     opt-in: false
     correctable: false
+grouped_imports:
+  severity: warning
+  our_modules: []
+  meta:
+    opt-in: true
+    correctable: true
 ibinspectable_in_extension:
   severity: warning
   meta:
@@ -581,6 +587,11 @@ joined_default_parameter:
   meta:
     opt-in: true
     correctable: true
+keychain_built_only_at_the_root:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 large_tuple:
   warning: 2
   error: 3
@@ -804,6 +815,11 @@ no_grouping_extension:
   meta:
     opt-in: true
     correctable: false
+no_legacy_router_readers:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 no_magic_numbers:
   severity: warning
   test_parent_classes: ["QuickSpec", "XCTestCase"]
@@ -816,11 +832,21 @@ no_presentation_state_outside_navigation:
   meta:
     opt-in: true
     correctable: false
+no_print_in_app_code:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 no_space_in_method_call:
   severity: warning
   meta:
     opt-in: false
     correctable: true
+no_user_defaults_in_app_code:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 non_optional_string_data_conversion:
   severity: warning
   include_variables: false
@@ -1252,6 +1278,11 @@ test_case_accessibility:
   meta:
     opt-in: true
     correctable: true
+tienda_api_kit_is_ui_free:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 todo:
   severity: warning
   only: [TODO, FIXME]
@@ -1435,6 +1466,11 @@ valid_ibinspectable:
   severity: warning
   meta:
     opt-in: false
+    correctable: false
+value_storage_built_only_at_the_root:
+  severity: warning
+  meta:
+    opt-in: true
     correctable: false
 variable_shadowing:
   severity: warning

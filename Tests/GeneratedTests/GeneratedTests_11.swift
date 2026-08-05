@@ -10,6 +10,70 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct UnusedImportRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnusedImportRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct UnusedOptionalBindingRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnusedOptionalBindingRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct UnusedParameterRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnusedParameterRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct UnusedSetterValueRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnusedSetterValueRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ValidIBInspectableRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ValidIBInspectableRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ValueStorageBuiltOnlyAtTheRootRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ValueStorageBuiltOnlyAtTheRootRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct VariableShadowingRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VariableShadowingRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct VerticalParameterAlignmentOnCallRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VerticalParameterAlignmentOnCallRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct VerticalParameterAlignmentRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {

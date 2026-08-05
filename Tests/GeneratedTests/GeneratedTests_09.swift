@@ -10,6 +10,54 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct RequiredDeinitRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(RequiredDeinitRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct RequiredEnumCaseRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(RequiredEnumCaseRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ReturnArrowWhitespaceRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ReturnArrowWhitespaceRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ReturnValueFromVoidFunctionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ReturnValueFromVoidFunctionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct SelfBindingRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(SelfBindingRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct SelfInPropertyInitializationRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(SelfInPropertyInitializationRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ShorthandArgumentRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -146,65 +194,17 @@ struct TestCaseAccessibilityRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct TiendaAPIKitIsUIFreeRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(TiendaAPIKitIsUIFreeRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct TodoRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(TodoRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ToggleBoolRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ToggleBoolRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TrailingClosureRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TrailingClosureRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TrailingCommaRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TrailingCommaRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TrailingNewlineRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TrailingNewlineRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TrailingSemicolonRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TrailingSemicolonRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TrailingWhitespaceRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TrailingWhitespaceRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TypeBodyLengthRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TypeBodyLengthRule.description)
     }
 }

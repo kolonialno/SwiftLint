@@ -10,6 +10,54 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct PrivateActionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PrivateActionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct PrivateOutletRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PrivateOutletRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct PrivateOverFilePrivateRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PrivateOverFilePrivateRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct PrivateSubjectRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PrivateSubjectRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct PrivateSwiftUIStatePropertyRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PrivateSwiftUIStatePropertyRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct PrivateUnitTestRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PrivateUnitTestRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ProhibitedInterfaceBuilderRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -158,53 +206,5 @@ struct RedundantVoidReturnRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(RedundantVoidReturnRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct RequiredDeinitRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(RequiredDeinitRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct RequiredEnumCaseRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(RequiredEnumCaseRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ReturnArrowWhitespaceRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ReturnArrowWhitespaceRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ReturnValueFromVoidFunctionRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ReturnValueFromVoidFunctionRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct SelfBindingRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(SelfBindingRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct SelfInPropertyInitializationRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(SelfInPropertyInitializationRule.description)
     }
 }

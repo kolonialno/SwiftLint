@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct MultilineConditionsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(MultilineConditionsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct MultilineFunctionChainsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -38,6 +46,14 @@ struct MultilineParametersRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(MultilineParametersRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct MultilineStringOpensOnItsOwnLineRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(MultilineStringOpensOnItsOwnLineRule.description)
     }
 }
 
@@ -146,6 +162,22 @@ struct NoGroupingExtensionRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct NoLegacyRouterReadersRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NoLegacyRouterReadersRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct NoLiveUIKitFrameReadsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NoLiveUIKitFrameReadsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct NoMagicNumbersRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -162,49 +194,17 @@ struct NoPresentationStateOutsideNavigationRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct NoPrintInAppCodeRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NoPrintInAppCodeRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct NoSpaceInMethodCallRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(NoSpaceInMethodCallRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct NonOptionalStringDataConversionRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(NonOptionalStringDataConversionRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct NonOverridableClassDeclarationRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(NonOverridableClassDeclarationRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct NotificationCenterDetachmentRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(NotificationCenterDetachmentRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct NumberSeparatorRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(NumberSeparatorRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ObjectLiteralRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ObjectLiteralRule.description)
     }
 }
