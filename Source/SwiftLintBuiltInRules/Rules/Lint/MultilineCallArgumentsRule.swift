@@ -76,6 +76,10 @@ private extension MultilineCallArgumentsRule {
             arguments: LabeledExprListSyntax
         ) -> ReasonedRuleViolation? {
             guard let firstPos = argumentPositions.first else { return nil }
+            guard !arguments.holdsOnlyNumbers else {
+                // A list of bare numbers is horizontal at any length, so neither direction has anything to say.
+                return nil
+            }
 
             let firstLine = line(for: firstPos)
             var allOnSameLine = true

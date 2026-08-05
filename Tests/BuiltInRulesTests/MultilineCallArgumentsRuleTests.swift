@@ -7,7 +7,7 @@ struct MultilineCallArgumentsRuleTests {
     @Test
     func reasonSingleLineMultipleArgumentsNotAllowed() throws {
         let violations = try validate(
-            "foo(a: 1, b: 2)",
+            "foo(a: x, b: y)",
             config: ["allows_single_line": false]
         )
 
@@ -21,7 +21,7 @@ struct MultilineCallArgumentsRuleTests {
     func reasonTooManyArgumentsOnASingleLine() throws {
         let max = 2
         let violations = try validate(
-            "foo(a: 1, b: 2, c: 3)",
+            "foo(a: x, b: y, c: z)",
             config: ["max_number_of_single_line_parameters": max]
         )
 
@@ -35,8 +35,8 @@ struct MultilineCallArgumentsRuleTests {
     func reasonMultilineEachArgumentMustStartOnItsOwnLine() throws {
         let violations = try validate("""
             foo(
-                a: 1, b: 2,
-                c: 3
+                a: x, b: y,
+                c: z
             )
             """
         )
@@ -51,8 +51,8 @@ struct MultilineCallArgumentsRuleTests {
     func reasonMultilineEachArgumentMustStartOnItsOwnLineDetectsSameLineAfterNewline() throws {
         let violations = try validate("""
             foo(
-                a: 1,
-                b: 2, c: 3
+                a: x,
+                b: y, c: z
             )
             """
         )
@@ -70,7 +70,7 @@ struct MultilineCallArgumentsRuleTests {
                 a: (
                     1,
                     2
-                ), b: 3
+                ), b: z
             )
             """
         )
@@ -85,7 +85,7 @@ struct MultilineCallArgumentsRuleTests {
     func reasonTooManyArgumentsOnASingleLineWorksWithTrailingClosure() throws {
         let max = 1
         let violations = try validate("""
-            foo(a: 1, b: 2) { _ in
+            foo(a: x, b: y) { _ in
                 print("x")
             }
             """,
@@ -101,7 +101,7 @@ struct MultilineCallArgumentsRuleTests {
     @Test
     func reasonSingleLineNotAllowedHasPriorityOverMaxNumberOfSingleLineParameters() throws {
         let violations = try validate(
-            "foo(a: 1, b: 2, c: 3)",
+            "foo(a: x, b: y, c: z)",
             config: [
                 "allows_single_line": false,
                 "max_number_of_single_line_parameters": 1,

@@ -32,10 +32,34 @@ extension SyntaxCollection where Element: WithTrailingCommaSyntax {
         if !allowance.allowsSingleLine {
             return true
         }
+        if holdsOnlyNumbers {
+            return false
+        }
         guard let maximum = allowance.maxNumberOfSingleLineParameters else {
             return false
         }
         return count > maximum
+    }
+
+    /// Whether every element is a bare number, in which case the list is horizontal at any length.
+    ///
+    /// `CGRect(x: 0, y: 0, width: 24, height: 24)` and `.timingCurve(0.4, 0, 0.2, 1, duration: 0.72)` are one
+    /// value spelled out in numbers, and a number is read next to the others rather than on a line of its own.
+    ///
+    /// The test is the literal rather than the type, because a linter reads syntax: it can see that `0.2` is a
+    /// number and can never know that `explosionFragmentEndOffset` holds a `CGFloat`. That boundary is what
+    /// keeps the exception honest in both directions. A computation is not a number, so
+    /// `UIColor(red: CGFloat((hex >> 16) & 0xFF) / 255, …)` still splits — four of those on one line stop
+    /// reading as a colour. Nor is an empty array, so a stub like
+    /// `.init(filters: [], groups: [], selected: selection)` still splits, which is the point: a rule that made
+    /// stubs comfortable would hide the thing to fix.
+    var holdsOnlyNumbers: Bool {
+        guard count > 1 else {
+            return false
+        }
+        return allSatisfy { element in
+            Syntax(element).as(LabeledExprSyntax.self)?.expression.isNumberLiteral == true
+        }
     }
 
     /// Whether the breaks in this list hold nothing a join would destroy — no comment to lose, no closure
@@ -131,6 +155,17 @@ extension SyntaxProtocol {
     /// The indentation of the line this node starts on, read from the tree so it survives a rewrite.
     var indentationOfOwnLine: Trivia {
         firstToken(viewMode: .sourceAccurate)?.indentationOfLine ?? []
+    }
+}
+
+private extension ExprSyntax {
+    /// A number as written: an integer or float literal, or one of those negated. A member access is not one,
+    /// so `.zero` and `.infinity` are outside the exception and the line stays where anyone can see it.
+    var isNumberLiteral: Bool {
+        if let negation = `as`(PrefixOperatorExprSyntax.self) {
+            return negation.operator.text == "-" && negation.expression.isNumberLiteral
+        }
+        return `is`(IntegerLiteralExprSyntax.self) || `is`(FloatLiteralExprSyntax.self)
     }
 }
 
