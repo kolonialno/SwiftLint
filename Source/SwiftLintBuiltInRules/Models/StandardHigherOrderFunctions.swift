@@ -12,10 +12,14 @@ let argumentLabelByStandardFunction: [String: String?] = [
     "drop": "while",
     "filter": nil,
     "first": "where",
+    "firstIndex": "where",
     "flatMap": nil,
+    "forEach": nil,
+    "last": "where",
     "map": nil,
     "partition": "by",
     "prefix": "while",
+    "removeAll": "where",
 ]
 
 extension FunctionCallExprSyntax {

@@ -32,6 +32,9 @@ struct KeyPathOnlyWhereTheAPITakesOneRule: Rule {
             "products.first(where: ↓\\.isAvailable)",
             "products.prefix(while: ↓\\.isAvailable)",
             "products.map(↓\\.price.amount)",
+            "products.last(where: ↓\\.isAvailable)",
+            "products.firstIndex(where: ↓\\.isAvailable)",
+            "products.removeAll(where: ↓\\.isDiscontinued)",
         ]),
         corrections: #corrections([
             "products.map(\\.name)": "products.map { $0.name }",
