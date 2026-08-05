@@ -177,7 +177,7 @@ private extension MultilineCallArgumentsRule {
                   let first = node.arguments.first,
                   !node.arguments.isOnOneLine,
                   !node.arguments.exceedsSingleLineAllowance(configuration),
-                  node.argumentsCanRejoinOneLine(configuration)
+                  node.argumentsCanRejoinOneLine
             else {
                 return nil
             }
@@ -230,7 +230,7 @@ private extension MultilineCallArgumentsRule {
                   let call = visited.as(FunctionCallExprSyntax.self),
                   !call.arguments.exceedsSingleLineAllowance(configuration),
                   !call.arguments.isOnOneLine,
-                  call.argumentsCanRejoinOneLine(configuration)
+                  call.argumentsCanRejoinOneLine
             else {
                 return visited
             }
@@ -248,7 +248,7 @@ private extension MultilineCallArgumentsRule {
 extension MultilineCallArgumentsConfiguration: SingleLineAllowance {}
 
 private extension FunctionCallExprSyntax {
-    func argumentsCanRejoinOneLine(_ configuration: MultilineCallArgumentsConfiguration) -> Bool {
+    var argumentsCanRejoinOneLine: Bool {
         !arguments.isEmpty
             && rightParen?.leadingTrivia.containsComment != true
             && arguments.canRejoinOneLine

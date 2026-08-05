@@ -224,7 +224,6 @@ private extension ClosureExprSyntax {
     }
 }
 
-
 private extension ExprSyntax {
     func asKeyPath(ignoreIdentityClosures: Bool) -> ExprSyntax? {
         if let memberAccess = `as`(MemberAccessExprSyntax.self) {

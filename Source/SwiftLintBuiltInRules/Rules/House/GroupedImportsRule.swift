@@ -1,3 +1,4 @@
+import Foundation
 import SwiftLintCore
 import SwiftSyntax
 
@@ -84,6 +85,21 @@ struct GroupedImportsRule: Rule {
             "import Alamofire\n@testable import XCTest": "@testable import XCTest\nimport Alamofire",
         ])
     )
+
+    /// A package manifest is left alone. Its first line has to be the `swift-tools-version` comment or
+    /// SwiftPM cannot read the file at all, which makes reordering the imports underneath it the one place
+    /// where getting the trivia wrong stops a package from building rather than merely reading oddly. There
+    /// is nothing to gain either way: a manifest imports `PackageDescription` and occasionally one more.
+    func preprocess(file: SwiftLintFile) -> SourceFileSyntax? {
+        namesAPackageManifest(file) ? nil : file.syntaxTree
+    }
+
+    private func namesAPackageManifest(_ file: SwiftLintFile) -> Bool {
+        guard let name = file.path?.lastPathComponent else {
+            return false
+        }
+        return name == "Package.swift" || (name.hasPrefix("Package@swift-") && name.hasSuffix(".swift"))
+    }
 }
 
 /// The project's own modules, for the examples that need a middle group to sort into.

@@ -72,8 +72,9 @@ private extension EnvironmentValueReassertionRule {
             injectedKeys.append((key, node.positionAfterSkippingLeadingTrivia))
         }
 
-        override func visitPost(_ node: SourceFileSyntax) {
-            for read in reads where injectedKeys.contains(where: { $0.key == read.key && $0.position > read.position }) {
+        override func visitPost(_: SourceFileSyntax) {
+            for read in reads
+            where injectedKeys.contains(where: { $0.key == read.key && $0.position > read.position }) {
                 violations.append(read.position)
             }
         }

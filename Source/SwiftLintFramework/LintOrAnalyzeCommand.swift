@@ -444,8 +444,9 @@ enum SwiftFormat {
         process.standardError = Pipe()
         try process.run()
         process.waitUntilExit()
-        return String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let output = pipe.fileHandleForReading.readDataToEndOfFile()
+        return String(bytes: output, encoding: .utf8)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
     }
 
     private static func locate() throws -> URL {

@@ -52,6 +52,27 @@ disabled_rules:
   - type_contents_order
   - variable_shadowing
   - vertical_whitespace_between_cases
+  # The house rules in Rules/House belong to the consumer, not to this codebase — they encode one app's
+  # layering, navigation and storage boundaries. `opt_in_rules: all` above would otherwise enforce them
+  # here, where they mean nothing: 655 violations, and the integration test that lints this project fails.
+  # `grouped_imports` has to be among them for a second reason — it disagrees with `sorted_imports`, which
+  # `all` also enables, and a file corrected by both ends up with its header comment moved below an import.
+  - environment_key_needs_judgement
+  - environment_value_reassertion
+  - grouped_imports
+  - key_path_only_where_the_api_takes_one
+  - keychain_built_only_at_the_root
+  - multiline_conditions
+  - multiline_string_opens_on_its_own_line
+  - navigation_destination_only_in_navigation
+  - no_direct_presentation
+  - no_legacy_router_readers
+  - no_live_uikit_frame_reads
+  - no_presentation_state_outside_navigation
+  - no_print_in_app_code
+  - no_user_defaults_in_app_code
+  - tienda_api_kit_is_ui_free
+  - value_storage_built_only_at_the_root
 
 # Configurations
 attributes:
@@ -78,6 +99,11 @@ file_name:
     - SwiftSyntax+SwiftLint.swift
     - TestHelpers.swift
     - Traits.swift
+    # Syntax helpers shared by several house rules, so each holds extensions and constants rather than one
+    # type to be named after.
+    - GroupedImports.swift
+    - HouseSwiftUISyntax.swift
+    - StandardHigherOrderFunctions.swift
   excluded_paths:
     - Tests/GeneratedTests/GeneratedTests_\d\d\.swift
     - Tests/FileSystemAccessTests/.+\.swift

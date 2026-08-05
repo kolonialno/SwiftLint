@@ -75,8 +75,7 @@ extension [GroupedImportLine] {
     var grouped: [String] {
         var seen: Set<String> = []
         return
-            self
-            .filter { seen.insert($0.text).inserted }
+            filter { seen.insert($0.text).inserted }
             .sorted {
                 if $0.group != $1.group {
                     return $0.group < $1.group
