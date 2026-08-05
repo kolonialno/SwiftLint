@@ -601,6 +601,32 @@ struct MultilineCallArgumentsRuleExamples {
             )
             """,
 
+        // Labels that name parts of one value read as one thing, like coordinates do.
+        """
+        Color(
+            red: 1,
+            green: 0,
+            blue: 0
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): "Color(red: 1, green: 0, blue: 0)",
+        """
+        EdgeInsets(
+            top: 0,
+            leading: 8,
+            bottom: 0,
+            trailing: 8
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): "EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)",
+
+        // One component among real arguments is not a value's parts, so this still splits.
+        "Badge(title: name, width: 8, subtitle: detail)".asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            Badge(
+                title: name,
+                width: 8,
+                subtitle: detail
+            )
+            """,
+
         // A single-letter label is a coordinate, and coordinates read as a group rather than as a list.
         """
         CGRect(

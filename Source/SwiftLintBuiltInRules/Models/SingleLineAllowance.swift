@@ -32,7 +32,7 @@ extension SyntaxCollection where Element: WithTrailingCommaSyntax {
         if !allowance.allowsSingleLine {
             return true
         }
-        if namesACoordinate {
+        if readsAsOneValue {
             return false
         }
         guard let maximum = allowance.maxNumberOfSingleLineParameters else {
@@ -48,6 +48,35 @@ extension SyntaxCollection where Element: WithTrailingCommaSyntax {
     /// `CGRect(x: 0, y: 0, width: 24, height: 24)`, `shadow(color: .black, radius: 8, y: 2)`. It applies to
     /// the list that names one, never to a list containing it, so an argument that happens to be a rectangle
     /// does not flatten its parent.
+    /// Whether this list describes one value rather than a set of arguments, in which case it is horizontal
+    /// at any length. Both directions and both halves of every rule ask this one question.
+    var readsAsOneValue: Bool {
+        namesACoordinate || namesOnlyComponents
+    }
+
+    /// Whether every element names a component of one value.
+    ///
+    /// `Color(red: 1, green: 0, blue: 0)` and `EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)` are read
+    /// as one thing for the same reason coordinates are, and the single-letter test misses them because their
+    /// labels are words. This is the one exception that needs a list of names, so the list is closed and short:
+    /// a label earns a place by being a *part of a value* rather than a thing in its own right. Every element
+    /// has to be one, so a call that names a colour channel among real arguments still splits.
+    var namesOnlyComponents: Bool {
+        guard count > 1 else {
+            return false
+        }
+        return allSatisfy { element in
+            let syntax = Syntax(element)
+            let name =
+                syntax.as(LabeledExprSyntax.self)?.label?.text
+                ?? syntax.as(FunctionParameterSyntax.self)?.firstName.text
+            guard let name else {
+                return false
+            }
+            return componentLabels.contains(name)
+        }
+    }
+
     var namesACoordinate: Bool {
         contains { element in
             let syntax = Syntax(element)
@@ -166,3 +195,11 @@ extension Trivia {
         contains(where: \.isComment)
     }
 }
+
+
+/// Labels that name a part of one value rather than an argument in its own right.
+private let componentLabels: Set<String> = [
+    "red", "green", "blue", "opacity", "alpha", "white", "hue", "saturation", "brightness",
+    "top", "leading", "bottom", "trailing", "left", "right", "horizontal", "vertical",
+    "width", "height", "minimum", "maximum",
+]
