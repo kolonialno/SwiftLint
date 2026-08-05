@@ -81,7 +81,31 @@ private extension IndentationRule {
                 return node
             }
             numberOfCorrections += 1
-            return node.with(\.leadingTrivia, node.leadingTrivia.reindented(to: wanted))
+            return node.with(
+                \.leadingTrivia,
+                node.leadingTrivia.reindented(to: wanted, commentsAt: node.commentIndentation(wanted: wanted)))
+        }
+    }
+}
+
+private extension TriviaPiece {
+    var isComment: Bool {
+        switch self {
+        case .lineComment, .blockComment, .docLineComment, .docBlockComment: true
+        default: false
+        }
+    }
+}
+
+extension TokenSyntax {
+    /// Where a comment on its own line in front of this token belongs.
+    ///
+    /// Usually with the token it introduces, but a comment in front of a closing brace is the last thing
+    /// inside the block, so it keeps the block's level rather than stepping back out with the brace.
+    func commentIndentation(wanted: Int, width: Int = 4) -> Int {
+        switch tokenKind {
+        case .rightBrace, .rightParen, .rightSquare: wanted + width
+        default: wanted
         }
     }
 }
@@ -121,10 +145,24 @@ extension TokenSyntax {
             if parent.opensAnIndentationLevel(for: node) {
                 steps += 1
             }
-            if parent.isMemberChainRoot, let broken = parent.firstBrokenPeriod,
-                position >= broken.position {
-                // A wrapped chain is one continuation level, counted once at its root and only for the
-                // lines after the break — its base still sits on the line that opened it.
+            if parent.kind == .initializerClause, node.leadingTrivia.containsNewline {
+                // `let x =` with its value on the next line: the value is a continuation of the binding.
+                steps += 1
+            }
+            if parent.kind == .infixOperatorExpr,
+                parent.parent?.kind != .infixOperatorExpr,
+                let operatorToken = parent.brokenOperator,
+                position >= operatorToken.position {
+                steps += 1
+            }
+            if parent.isMemberChainRoot,
+                let broken = parent.firstBrokenPeriod,
+                position >= broken.position,
+                !parent.chainBaseIsMultiline {
+                // A wrapped chain is one continuation level, counted once at its root and only from the
+                // break onwards, so its base still sits on the line that opened it. A chain hanging off a
+                // *multiline* base keeps that base's own level instead: `VStack { … }` then `.padding()`
+                // aligns with the `VStack`, while `Rectangle(…)` then `.fill()` steps in.
                 steps += 1
             }
             node = parent
@@ -146,6 +184,23 @@ extension TokenSyntax {
 }
 
 extension Syntax {
+    /// Whether this list puts any of its elements on a line of its own, which is what opens a level.
+    ///
+    /// A list that stays on one line opens nothing, however deeply the expressions inside it wrap: the
+    /// arguments of `if Self.isInCart(\n  id: id\n)` step in once, from the call, not twice.
+    var isBroken: Bool {
+        children(viewMode: .sourceAccurate).contains { $0.leadingTrivia.containsNewline }
+    }
+
+    /// The operator that opens a line in this expression, when one does.
+    var brokenOperator: TokenSyntax? {
+        guard let expression = self.as(InfixOperatorExprSyntax.self) else {
+            return nil
+        }
+        let operatorToken = expression.operator.firstToken(viewMode: .sourceAccurate)
+        return operatorToken?.leadingTrivia.containsNewline == true ? operatorToken : nil
+    }
+
     /// Whether this is the outermost link of a member chain, which is where the chain's one level is counted.
     var isMemberChainRoot: Bool {
         guard isMemberChainLink else {
@@ -167,6 +222,24 @@ extension Syntax {
             return member.base != nil
         }
         return false
+    }
+
+    /// Whether what the chain hangs off spans lines of its own.
+    var chainBaseIsMultiline: Bool {
+        var link: Syntax? = self
+        var base: Syntax?
+        while let node = link {
+            if let member = node.as(MemberAccessExprSyntax.self) {
+                base = member.base.map(Syntax.init)
+                link = base
+            } else if let call = node.as(FunctionCallExprSyntax.self),
+                call.calledExpression.is(MemberAccessExprSyntax.self) {
+                link = Syntax(call.calledExpression)
+            } else {
+                break
+            }
+        }
+        return base?.trimmedDescription.contains("\n") == true
     }
 
     /// The first `.` of this chain that opens a line, which is where its continuation begins.
@@ -202,13 +275,13 @@ private extension Syntax {
         switch kind {
         case .codeBlockItemList:
             // A file's own statements are already at the outermost level.
-            return parent?.is(SourceFileSyntax.self) == false
+            return parent?.is(SourceFileSyntax.self) == false && isBroken
         case .memberBlockItemList, .accessorDeclList,
             .labeledExprList, .functionParameterList, .closureParameterList,
             .arrayElementList, .dictionaryElementList, .conditionElementList,
             .enumCaseParameterList, .switchCaseItemList, .genericParameterList,
-            .inheritedTypeList:
-            return true
+            .inheritedTypeList, .tupleTypeElementList, .tupleExprElementList:
+            return isBroken
         case .switchCaseList:
             // The house formatter keeps `case` at the `switch`'s level; only the bodies step in.
             return false
@@ -220,7 +293,7 @@ private extension Syntax {
 
 private extension Trivia {
     /// The same trivia with every line's leading whitespace replaced by `spaces`, comments included.
-    func reindented(to spaces: Int) -> Trivia {
+    func reindented(to spaces: Int, commentsAt commentSpaces: Int) -> Trivia {
         var pieces: [TriviaPiece] = []
         var atLineStart = false
         for piece in self.pieces {
@@ -234,7 +307,7 @@ private extension Trivia {
                 }
             default:
                 if atLineStart {
-                    pieces.append(.spaces(spaces))
+                    pieces.append(.spaces(piece.isComment ? commentSpaces : spaces))
                     atLineStart = false
                 }
                 pieces.append(piece)
