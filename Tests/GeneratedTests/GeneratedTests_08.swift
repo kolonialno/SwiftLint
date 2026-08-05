@@ -10,6 +10,46 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct ProhibitedSuperRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ProhibitedSuperRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ProtocolPropertyAccessorsOrderRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ProtocolPropertyAccessorsOrderRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct QuickDiscouragedCallRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(QuickDiscouragedCallRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct QuickDiscouragedFocusedTestRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(QuickDiscouragedFocusedTestRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct QuickDiscouragedPendingTestRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(QuickDiscouragedPendingTestRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct RawValueForCamelCasedCodableEnumRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -166,45 +206,5 @@ struct ShorthandArgumentRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(ShorthandArgumentRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ShorthandOperatorRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ShorthandOperatorRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ShorthandOptionalBindingRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ShorthandOptionalBindingRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct SingleTestClassRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(SingleTestClassRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct SortedEnumCasesRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(SortedEnumCasesRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct SortedFirstLastRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(SortedFirstLastRule.description)
     }
 }

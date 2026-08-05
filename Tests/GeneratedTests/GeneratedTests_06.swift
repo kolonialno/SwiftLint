@@ -10,6 +10,22 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct MultilineLiteralBracketsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(MultilineLiteralBracketsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct MultilineParametersBracketsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(MultilineParametersBracketsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct MultilineParametersRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -58,6 +74,14 @@ struct NSObjectPreferIsEqualRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct NavigationDestinationOnlyInNavigationRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NavigationDestinationOnlyInNavigationRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct NestingRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -70,6 +94,14 @@ struct NimbleOperatorRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(NimbleOperatorRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct NoDirectPresentationRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NoDirectPresentationRule.description)
     }
 }
 
@@ -110,6 +142,14 @@ struct NoMagicNumbersRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(NoMagicNumbersRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct NoPresentationStateOutsideNavigationRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NoPresentationStateOutsideNavigationRule.description)
     }
 }
 
@@ -166,45 +206,5 @@ struct OneDeclarationPerFileRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(OneDeclarationPerFileRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct OpeningBraceRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(OpeningBraceRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct OperatorUsageWhitespaceRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(OperatorUsageWhitespaceRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct OptionalDataStringConversionRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(OptionalDataStringConversionRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct OptionalEnumCaseMatchingRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(OptionalEnumCaseMatchingRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct OrphanedDocCommentRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(OrphanedDocCommentRule.description)
     }
 }

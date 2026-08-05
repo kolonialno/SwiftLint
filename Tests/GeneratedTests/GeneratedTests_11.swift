@@ -10,6 +10,46 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct VerticalWhitespaceBetweenCasesRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VerticalWhitespaceBetweenCasesRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct VerticalWhitespaceClosingBracesRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VerticalWhitespaceClosingBracesRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct VerticalWhitespaceOpeningBracesRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VerticalWhitespaceOpeningBracesRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct VerticalWhitespaceRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VerticalWhitespaceRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct VoidFunctionInTernaryConditionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VoidFunctionInTernaryConditionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct VoidReturnRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {

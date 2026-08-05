@@ -10,6 +10,22 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct LastWhereRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(LastWhereRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct LeadingWhitespaceRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(LeadingWhitespaceRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct LegacyCGGeometryFunctionsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -190,21 +206,5 @@ struct MultilineFunctionChainsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(MultilineFunctionChainsRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct MultilineLiteralBracketsRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(MultilineLiteralBracketsRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct MultilineParametersBracketsRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(MultilineParametersBracketsRule.description)
     }
 }

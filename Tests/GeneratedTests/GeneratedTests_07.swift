@@ -10,6 +10,46 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct OpeningBraceRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(OpeningBraceRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct OperatorUsageWhitespaceRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(OperatorUsageWhitespaceRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct OptionalDataStringConversionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(OptionalDataStringConversionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct OptionalEnumCaseMatchingRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(OptionalEnumCaseMatchingRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct OrphanedDocCommentRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(OrphanedDocCommentRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct OverriddenSuperCallRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -166,45 +206,5 @@ struct ProhibitedInterfaceBuilderRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(ProhibitedInterfaceBuilderRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ProhibitedSuperRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ProhibitedSuperRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ProtocolPropertyAccessorsOrderRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ProtocolPropertyAccessorsOrderRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct QuickDiscouragedCallRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(QuickDiscouragedCallRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct QuickDiscouragedFocusedTestRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(QuickDiscouragedFocusedTestRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct QuickDiscouragedPendingTestRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(QuickDiscouragedPendingTestRule.description)
     }
 }

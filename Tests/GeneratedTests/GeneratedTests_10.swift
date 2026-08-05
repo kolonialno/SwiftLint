@@ -10,6 +10,46 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct TypeNameRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(TypeNameRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct TypesafeArrayInitRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(TypesafeArrayInitRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct UnavailableConditionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnavailableConditionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct UnavailableFunctionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnavailableFunctionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct UnhandledThrowingTaskRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnhandledThrowingTaskRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct UnneededBreakInSwitchRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -166,45 +206,5 @@ struct VerticalParameterAlignmentRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(VerticalParameterAlignmentRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct VerticalWhitespaceBetweenCasesRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(VerticalWhitespaceBetweenCasesRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct VerticalWhitespaceClosingBracesRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(VerticalWhitespaceClosingBracesRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct VerticalWhitespaceOpeningBracesRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(VerticalWhitespaceOpeningBracesRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct VerticalWhitespaceRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(VerticalWhitespaceRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct VoidFunctionInTernaryConditionRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(VoidFunctionInTernaryConditionRule.description)
     }
 }

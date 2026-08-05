@@ -10,6 +10,22 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct FlatMapOverMapReduceRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(FlatMapOverMapReduceRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ForWhereRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ForWhereRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ForceCastRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -190,21 +206,5 @@ struct LargeTupleRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(LargeTupleRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct LastWhereRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(LastWhereRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct LeadingWhitespaceRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(LeadingWhitespaceRule.description)
     }
 }

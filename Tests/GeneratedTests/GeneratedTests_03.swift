@@ -58,6 +58,22 @@ struct EnumCaseAssociatedValuesLengthRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct EnvironmentKeyNeedsJudgementRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(EnvironmentKeyNeedsJudgementRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct EnvironmentValueReassertionRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(EnvironmentValueReassertionRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ExpiringTodoRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -190,21 +206,5 @@ struct FirstWhereRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(FirstWhereRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct FlatMapOverMapReduceRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(FlatMapOverMapReduceRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ForWhereRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ForWhereRule.description)
     }
 }

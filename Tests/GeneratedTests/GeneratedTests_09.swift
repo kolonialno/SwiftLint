@@ -10,6 +10,46 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct ShorthandOperatorRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ShorthandOperatorRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct ShorthandOptionalBindingRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ShorthandOptionalBindingRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct SingleTestClassRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(SingleTestClassRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct SortedEnumCasesRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(SortedEnumCasesRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
+struct SortedFirstLastRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(SortedFirstLastRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct SortedImportsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -166,45 +206,5 @@ struct TypeContentsOrderRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(TypeContentsOrderRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TypeNameRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TypeNameRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TypesafeArrayInitRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TypesafeArrayInitRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct UnavailableConditionRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(UnavailableConditionRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct UnavailableFunctionRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(UnavailableFunctionRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct UnhandledThrowingTaskRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(UnhandledThrowingTaskRule.description)
     }
 }
