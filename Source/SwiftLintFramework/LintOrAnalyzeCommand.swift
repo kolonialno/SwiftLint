@@ -404,8 +404,8 @@ enum SwiftFormat {
         try process.run()
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
-            throw SwiftLintError.usageError(
-                description: "swift-format exited with \(process.terminationStatus).")
+            // swift-format has already said what it found, so exiting with its status is the whole report.
+            exit(process.terminationStatus)
         }
         if !quiet {
             queuedPrintError("\(verb) \(paths.count) file(s) with \(binary.path).")
