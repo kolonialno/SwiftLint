@@ -87,6 +87,7 @@ public let builtInRules: [any Rule.Type] = [
     FunctionNameWhitespaceRule.self,
     FunctionParameterCountRule.self,
     GenericTypeNameRule.self,
+    GroupedImportsRule.self,
     IBInspectableInExtensionRule.self,
     IdenticalOperandsRule.self,
     IdentifierNameRule.self,

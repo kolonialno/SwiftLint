@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct MultilineFunctionChainsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(MultilineFunctionChainsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct MultilineLiteralBracketsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct ObjectLiteralRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(ObjectLiteralRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct OneDeclarationPerFileRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(OneDeclarationPerFileRule.description)
     }
 }

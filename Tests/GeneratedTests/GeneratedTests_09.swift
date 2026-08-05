@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct ShorthandArgumentRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ShorthandArgumentRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ShorthandOperatorRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct TypeBodyLengthRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(TypeBodyLengthRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TypeContentsOrderRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TypeContentsOrderRule.description)
     }
 }

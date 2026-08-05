@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct ProhibitedInterfaceBuilderRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(ProhibitedInterfaceBuilderRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ProhibitedSuperRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct SelfInPropertyInitializationRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(SelfInPropertyInitializationRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ShorthandArgumentRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ShorthandArgumentRule.description)
     }
 }

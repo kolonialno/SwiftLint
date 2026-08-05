@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct LargeTupleRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(LargeTupleRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct LastWhereRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct MultilineConditionsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(MultilineConditionsRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct MultilineFunctionChainsRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(MultilineFunctionChainsRule.description)
     }
 }

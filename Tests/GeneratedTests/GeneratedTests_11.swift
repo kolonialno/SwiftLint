@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct VerticalParameterAlignmentRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(VerticalParameterAlignmentRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct VerticalWhitespaceBetweenCasesRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {

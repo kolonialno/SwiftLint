@@ -307,6 +307,16 @@ enum_case_associated_values_count:
   meta:
     opt-in: true
     correctable: false
+environment_key_needs_judgement:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
+environment_value_reassertion:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 expiring_todo:
   approaching_expiry_severity: warning
   expired_severity: error
@@ -745,6 +755,11 @@ multiple_closures_with_trailing_closure:
   meta:
     opt-in: false
     correctable: false
+navigation_destination_only_in_navigation:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 nesting:
   type_level:
     warning: 1
@@ -762,6 +777,11 @@ nimble_operator:
   meta:
     opt-in: true
     correctable: true
+no_direct_presentation:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 no_empty_block:
   severity: warning
   disabled_block_types: []
@@ -788,6 +808,11 @@ no_magic_numbers:
   severity: warning
   test_parent_classes: ["QuickSpec", "XCTestCase"]
   allowed_numbers: [0.0, 1.0, 100.0]
+  meta:
+    opt-in: true
+    correctable: false
+no_presentation_state_outside_navigation:
+  severity: warning
   meta:
     opt-in: true
     correctable: false

@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct OneDeclarationPerFileRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(OneDeclarationPerFileRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct OpeningBraceRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct PrivateUnitTestRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(PrivateUnitTestRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct ProhibitedInterfaceBuilderRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(ProhibitedInterfaceBuilderRule.description)
     }
 }

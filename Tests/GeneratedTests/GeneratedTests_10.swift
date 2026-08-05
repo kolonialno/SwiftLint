@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct TypeContentsOrderRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(TypeContentsOrderRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct TypeNameRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct VerticalParameterAlignmentOnCallRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(VerticalParameterAlignmentOnCallRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct VerticalParameterAlignmentRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(VerticalParameterAlignmentRule.description)
     }
 }

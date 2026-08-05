@@ -90,6 +90,14 @@ struct GenericTypeNameRuleGeneratedTests {
 }
 
 @Suite(.rulesRegistered)
+struct GroupedImportsRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(GroupedImportsRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct IBInspectableInExtensionRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct JoinedDefaultParameterRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(JoinedDefaultParameterRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct LargeTupleRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(LargeTupleRule.description)
     }
 }
