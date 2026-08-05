@@ -38,8 +38,8 @@ struct MultilineCallArgumentsRuleExamples {
 
         // MARK: - Unlabeled / mixed arguments
         "foo(1, 2)".asExample(configuration: ["max_number_of_single_line_parameters": 2]),
-        "foo(1, b: 2)".asExample(configuration: ["max_number_of_single_line_parameters": 2]),
-        "foo(1, b: 2, c: 3)".asExample(configuration: ["max_number_of_single_line_parameters": 3]),
+        "foo(1, second: 2)".asExample(configuration: ["max_number_of_single_line_parameters": 2]),
+        "foo(1, second: 2, third: 3)".asExample(configuration: ["max_number_of_single_line_parameters": 3]),
 
         // MARK: - Enum-case constructor calls are normal calls (stable by declaring the enum)
         """
@@ -63,23 +63,23 @@ struct MultilineCallArgumentsRuleExamples {
         // MARK: - Trailing closures are ignored by this rule (args-only)
         // Single-line args still use max_number_of_single_line_parameters
         """
-            foo(a: 1, b: 2) { value in
+            foo(first: 1, second: 2) { value in
                 print(value)
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
         // Multi-line args remain valid regardless of closure placement
         """
             foo(
-                a: 1,
-                b: 2
+                first: 1,
+                second: 2
             ) { value in
                 print(value)
             }
             """.asExample(configuration: ["allows_single_line": false]),
         """
             foo(
-                a: 1,
-                b: 2
+                first: 1,
+                second: 2
             )
             { value in
                 print(value)
@@ -93,7 +93,7 @@ struct MultilineCallArgumentsRuleExamples {
             """.asExample(configuration: ["max_number_of_single_line_parameters": 1]),
         // Multiple trailing closures: still args-only
         """
-            foo(a: 1, b: 2) { _ in
+            foo(first: 1, second: 2) { _ in
                 print("main")
             } trailing: { _ in
                 print("extra")
@@ -110,30 +110,30 @@ struct MultilineCallArgumentsRuleExamples {
         // MARK: - Trivia / comments
         """
             foo(
-                a: 1,
+                first: 1,
                 // comment
-                b: 2,
-                c: 3
+                second: 2,
+                third: 3
             )
             """,
         // Note: arguments start on the same line, so this is treated as a single-line-args call;
         // the comma-newline check applies only when argument start lines are already split.
         """
             foo(
-                a: (1, 2), b: 3
+                first: (1, 2), second: 3
             )
             """,
         """
             foo(
-                a: (1, 2),
-                b: 3
+                first: (1, 2),
+                second: 3
             )
             """.asExample(configuration: ["allows_single_line": false]),
         """
             foo(
-                a: 1, // comment
-                b: 2,
-                c: 3
+                first: 1, // comment
+                second: 2,
+                third: 3
             )
             """,
 
@@ -233,7 +233,7 @@ struct MultilineCallArgumentsRuleExamples {
 
         // MARK: - Regular calls near patterns are still linted
         """
-            func foo(a: Int, b: Int, c: Int) -> Int { a + b + c }
+            func foo(first: Int, second: Int, third: Int) -> Int { a + b + c }
             enum EnumCase { case caseOne(Int, Int, Int, Int) }
 
             if case let .caseOne(_, _, _, _) = EnumCase.caseOne(
@@ -243,9 +243,9 @@ struct MultilineCallArgumentsRuleExamples {
                 4
             ) {
                 _ = foo(
-                    a: 1,
-                    b: 2,
-                    c: 3
+                    first: 1,
+                    second: 2,
+                    third: 3
                 )
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
@@ -305,13 +305,13 @@ struct MultilineCallArgumentsRuleExamples {
         """
             foo(
                 // why
-                a: 1,
-                b: 2
+                first: 1,
+                second: 2
             )
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]),
         """
             foo(
-                a: 1,
+                first: 1,
                 action: {
                     bar()
                 }
@@ -319,8 +319,8 @@ struct MultilineCallArgumentsRuleExamples {
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]),
         """
             foo(
-                a: 1,
-                b: 2
+                first: 1,
+                second: 2
             )
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
     ])
@@ -332,7 +332,7 @@ struct MultilineCallArgumentsRuleExamples {
         "Enum.foo(param1: 1, param2: false, ↓param3: [])"
             .asExample(configuration: ["max_number_of_single_line_parameters": 2]),
         "foo(1, 2, ↓3)".asExample(configuration: ["max_number_of_single_line_parameters": 2]),
-        "foo(1, b: 2, ↓3)".asExample(configuration: ["max_number_of_single_line_parameters": 2]),
+        "foo(1, second: 2, ↓3)".asExample(configuration: ["max_number_of_single_line_parameters": 2]),
 
         // allows_single_line=false: any 2+ single-line call violates at 2nd argument
         "foo(param1: 1, ↓param2: false)".asExample(configuration: ["allows_single_line": false]),
@@ -341,36 +341,36 @@ struct MultilineCallArgumentsRuleExamples {
         // MARK: - Multi-line: two args start on the same line
         """
             foo(
-                a: 1, ↓b: 2,
-                c: 3
+                first: 1, ↓second: 2,
+                third: 3
             )
             """,
         """
             foo(
-                a: 1,
-                b: 2, ↓c: 3
+                first: 1,
+                second: 2, ↓third: 3
             )
             """,
         """
             foo(
-                a: 1,
-                b: 2,
-                c: 3, ↓d: 4,
-                e: 5
+                first: 1,
+                second: 2,
+                third: 3, ↓fourth: 4,
+                fifth: 5
             )
             """,
         """
             foo(
-                a: (
+                first: (
                     1,
                     2
-                ), ↓b: 3
+                ), ↓second: 3
             )
             """.asExample(configuration: ["max_number_of_single_line_parameters": 1]),
         """
             foo(
-                a: 1, /* comment */ ↓b: 2,
-                c: 3
+                first: 1, /* comment */ ↓second: 2,
+                third: 3
             )
             """,
 
@@ -390,7 +390,7 @@ struct MultilineCallArgumentsRuleExamples {
 
         // MARK: - Trailing closure: parentheses args still checked
         """
-            foo(a: 1, ↓b: 2) { _ in
+            foo(first: 1, ↓second: 2) { _ in
                 print("x")
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 1]),
@@ -415,7 +415,7 @@ struct MultilineCallArgumentsRuleExamples {
 
         // Targeted: pattern-part ignored, RHS call linted
         """
-            func foo(a: Int, b: Int, c: Int) -> Int { a + b + c }
+            func foo(first: Int, second: Int, third: Int) -> Int { a + b + c }
             enum EnumCase { case caseOne(Int, Int, Int, Int) }
             let enumCase: EnumCase = .caseOne(
                 1,
@@ -424,13 +424,13 @@ struct MultilineCallArgumentsRuleExamples {
                 4
             )
             if case let .caseOne(_, _, _, _) = enumCase {
-                _ = foo(a: 1, b: 2, ↓c: 3)
+                _ = foo(first: 1, second: 2, ↓third: 3)
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
 
         // Targeted: switch-where RHS call linted, pattern ignored
         """
-            func foo(a: Int, b: Int, c: Int) -> Bool { a + b == c }
+            func foo(first: Int, second: Int, third: Int) -> Bool { a + b == c }
             enum EnumCase { case caseOne(Int, Int, Int, Int) }
             let enumCase: EnumCase = .caseOne(
                 1,
@@ -439,7 +439,7 @@ struct MultilineCallArgumentsRuleExamples {
                 4
             )
             switch enumCase {
-            case .caseOne where foo(a: 1, b: 2, ↓c: 3):
+            case .caseOne where foo(first: 1, second: 2, ↓third: 3):
                 break
             default:
                 break
@@ -448,7 +448,7 @@ struct MultilineCallArgumentsRuleExamples {
 
         // Targeted: for-case pattern ignored, body call linted
         """
-            func foo(a: Int, b: Int, c: Int) -> Int { a + b + c }
+            func foo(first: Int, second: Int, third: Int) -> Int { a + b + c }
             enum EnumCase { case caseOne(Int, Int, Int, Int) }
             let array: [EnumCase] = [
                 .caseOne(
@@ -459,11 +459,11 @@ struct MultilineCallArgumentsRuleExamples {
                 )
             ]
             for case let .caseOne(_, _, _, _) in array {
-                _ = foo(a: 1, b: 2, ↓c: 3)
+                _ = foo(first: 1, second: 2, ↓third: 3)
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
         """
-            func foo(a: Int, b: Int, c: Int) -> Int { a + b + c }
+            func foo(first: Int, second: Int, third: Int) -> Int { a + b + c }
             enum EnumCase: Error { case caseOne(Int, Int, Int, Int) }
 
             func mayThrow() throws {
@@ -472,42 +472,42 @@ struct MultilineCallArgumentsRuleExamples {
             do {
                 try mayThrow()
             } catch let EnumCase.caseOne(_, _, _, _) {
-                _ = foo(a: 1, b: 2, ↓c: 3)
+                _ = foo(first: 1, second: 2, ↓third: 3)
             }
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2]),
         """
             foo(
-                ↓a: 1,
-                b: 2
+                ↓first: 1,
+                second: 2
             )
             """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]),
     ])
 
     static let corrections: [Example: Example] = #corrections([
         """
-        foo(a: 1, b: 2, c: 3)
+        foo(first: 1, second: 2, third: 3)
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
             foo(
-                a: 1,
-                b: 2,
-                c: 3
+                first: 1,
+                second: 2,
+                third: 3
             )
             """,
 
         """
-        foo(a: 1, b: 2)
+        foo(first: 1, second: 2)
         """.asExample(configuration: ["allows_single_line": false]): """
             foo(
-                a: 1,
-                b: 2
+                first: 1,
+                second: 2
             )
             """,
 
         // Two arguments are within the allowance, so the call keeps the shape it has.
         """
-        foo(a: 1, b: 2)
+        foo(first: 1, second: 2)
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2]): """
-            foo(a: 1, b: 2)
+            foo(first: 1, second: 2)
             """,
 
         // A list nested in one being reshaped indents from the line the reshape puts it on, which is what
@@ -553,51 +553,78 @@ struct MultilineCallArgumentsRuleExamples {
         // comes back to one line instead of keeping the shape it had when it was longer.
         """
         foo(
-            a: 1,
-            b: 2
+            first: 1,
+            second: 2
         )
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
-            foo(a: 1, b: 2)
+            foo(first: 1, second: 2)
             """,
 
         // A trailing comma reads as a shape marker only while the list is split.
         """
         foo(
-            a: 1,
-            b: 2,
+            first: 1,
+            second: 2,
         )
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
-            foo(a: 1, b: 2)
+            foo(first: 1, second: 2)
             """,
 
         // A comment inside the list is a line of its own, so the breaks holding it stay.
         """
         foo(
             // why
-            a: 1,
-            b: 2
+            first: 1,
+            second: 2
         )
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
             foo(
                 // why
-                a: 1,
-                b: 2
+                first: 1,
+                second: 2
             )
             """,
 
         """
         foo(
-            a: 1,
+            first: 1,
             action: {
                 bar()
             }
         )
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
             foo(
-                a: 1,
+                first: 1,
                 action: {
                     bar()
                 }
+            )
+            """,
+
+        // A single-letter label is a coordinate, and coordinates read as a group rather than as a list.
+        """
+        CGRect(
+            x: 0,
+            y: 0,
+            width: 24,
+            height: 24
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): "CGRect(x: 0, y: 0, width: 24, height: 24)",
+        """
+        view.shadow(
+            color: .black,
+            radius: 8,
+            y: 2
+        )
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): "view.shadow(color: .black, radius: 8, y: 2)",
+
+        // The list that names one, never the list holding it: the outer three still split.
+        "Badge(icon: .star, box: CGRect(x: 0, y: 0, width: 8, height: 8), title: name)"
+            .asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            Badge(
+                icon: .star,
+                box: CGRect(x: 0, y: 0, width: 8, height: 8),
+                title: name
             )
             """,
 
@@ -605,17 +632,17 @@ struct MultilineCallArgumentsRuleExamples {
         // shares with another argument.
         """
         outer(
-            a: inner(x: 1, y: 2, z: 3),
-            b: 2
+            first: inner(alpha: 1, beta: 2, gamma: 3),
+            second: 2
         )
         """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
             outer(
-                a: inner(
-                    x: 1,
-                    y: 2,
-                    z: 3
+                first: inner(
+                    alpha: 1,
+                    beta: 2,
+                    gamma: 3
                 ),
-                b: 2
+                second: 2
             )
             """,
 

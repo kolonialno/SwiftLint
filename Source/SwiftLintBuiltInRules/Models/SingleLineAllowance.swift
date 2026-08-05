@@ -32,10 +32,33 @@ extension SyntaxCollection where Element: WithTrailingCommaSyntax {
         if !allowance.allowsSingleLine {
             return true
         }
+        if namesACoordinate {
+            return false
+        }
         guard let maximum = allowance.maxNumberOfSingleLineParameters else {
             return false
         }
         return count > maximum
+    }
+
+    /// Whether any element names itself with a single letter.
+    ///
+    /// `x`, `y`, `r` are coordinates, and coordinates are read as a group: stacking them vertically hides the
+    /// shape they describe, so one of them keeps the whole list on one line whatever its length —
+    /// `CGRect(x: 0, y: 0, width: 24, height: 24)`, `shadow(color: .black, radius: 8, y: 2)`. It applies to
+    /// the list that names one, never to a list containing it, so an argument that happens to be a rectangle
+    /// does not flatten its parent.
+    var namesACoordinate: Bool {
+        contains { element in
+            let syntax = Syntax(element)
+            let name =
+                syntax.as(LabeledExprSyntax.self)?.label?.text
+                ?? syntax.as(FunctionParameterSyntax.self)?.firstName.text
+            guard let name, name.count == 1, let letter = name.first, letter.isLetter else {
+                return false
+            }
+            return true
+        }
     }
 
     /// Whether the breaks in this list hold nothing a join would destroy — no comment to lose, no closure
