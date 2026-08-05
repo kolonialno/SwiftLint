@@ -392,6 +392,16 @@ internal struct MultilineParametersRuleExamples {
             init(param1: Int, param2: Bool) {}
             """,
 
+        // A list within the allowance that shares one line below the paren joins rather than splitting: the
+        // shape is uneven, and the allowance decides which of the two even shapes it takes.
+        """
+        func foo(
+            param1: Int, param2: Bool
+        ) {}
+        """.asExample(configuration: ["max_number_of_single_line_parameters": 2, "requires_single_line": true]): """
+            func foo(param1: Int, param2: Bool) {}
+            """,
+
         // Neither one line nor one per line, which is the shape this rule is named for.
         """
         func foo(param1: Int,

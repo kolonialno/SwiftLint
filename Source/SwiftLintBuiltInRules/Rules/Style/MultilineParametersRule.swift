@@ -115,8 +115,10 @@ private extension MultilineParametersRule {
                 (parameters.count > 1
                     && parameters.exceedsSingleLineAllowance(configuration)
                     && parameters.isOnOneLine)
-                // Neither one line nor one per line, which is the shape this rule is named for.
-                || parameters.isSplitUnevenly
+                // Neither one line nor one per line, which is the shape this rule is named for. A list that
+                // could simply come back to one line does that instead, since splitting it further would be
+                // the opposite of what the allowance asks for — and the visitor reports the join, not a split.
+                || (parameters.isSplitUnevenly && !clause.canRejoinOneLine(within: configuration))
             guard needsSplitting else {
                 return nil
             }
