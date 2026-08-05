@@ -325,15 +325,6 @@ package struct LintOrAnalyzeCommand {
         let correctionsBuilder = CorrectionsBuilder()
         let files = try await configuration
             .visitLintableFiles(options: options, cache: nil, storage: storage) { linter in
-                if options.format {
-                    switch configuration.indentation {
-                    case .tabs:
-                        linter.format(useTabs: true, indentWidth: 4)
-                    case .spaces(let count):
-                        linter.format(useTabs: false, indentWidth: count)
-                    }
-                }
-
                 let corrections = linter.correct(using: storage)
                 if !corrections.isEmpty, !options.quiet {
                     if options.useSTDIN {
@@ -370,6 +361,55 @@ package struct LintOrAnalyzeCommand {
             }
             queuedPrintError("Done correcting \(files.count) file\(pluralSuffix(files))!")
         }
+
+        if options.format {
+            try SwiftFormat.run(over: files.compactMap { $0.path?.path }, quiet: options.quiet)
+        }
+    }
+}
+
+/// The formatter Xcode's Format File runs, invoked over the files this command just corrected.
+///
+/// Layout is swift-format's to decide — the rules here only choose which lists split and which join — so the
+/// binary that decides it has to be the one Xcode has: found through `xcrun`, never installed separately, or
+/// the tree and the keystroke drift apart.
+enum SwiftFormat {
+    static func run(over paths: [String], quiet: Bool) throws {
+        guard paths.isNotEmpty else {
+            return
+        }
+        let binary = try locate()
+        let process = Process()
+        process.executableURL = binary
+        process.arguments = ["format", "--in-place", "--parallel"] + paths
+        try process.run()
+        process.waitUntilExit()
+        guard process.terminationStatus == 0 else {
+            throw SwiftLintError.usageError(
+                description: "swift-format exited with \(process.terminationStatus).")
+        }
+        if !quiet {
+            queuedPrintError("Formatted \(paths.count) file(s) with \(binary.path).")
+        }
+    }
+
+    private static func locate() throws -> URL {
+        let xcrun = Process()
+        xcrun.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
+        xcrun.arguments = ["--find", "swift-format"]
+        let output = Pipe()
+        xcrun.standardOutput = output
+        xcrun.standardError = Pipe()
+        try xcrun.run()
+        xcrun.waitUntilExit()
+        let found = String(
+            decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard xcrun.terminationStatus == 0, !found.isEmpty else {
+            throw SwiftLintError.usageError(
+                description: "swift-format not found. It ships inside Xcode, which is what Format File runs.")
+        }
+        return URL(fileURLWithPath: found)
     }
 }
 
