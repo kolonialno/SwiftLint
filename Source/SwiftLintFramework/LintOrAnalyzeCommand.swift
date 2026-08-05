@@ -153,6 +153,10 @@ package struct LintOrAnalyzeCommand {
     private static func lintOrAnalyze(_ options: LintOrAnalyzeOptions) async throws {
         let builder = LintOrAnalyzeResultBuilder(options)
         let files = try await collectViolations(builder: builder)
+        if options.format {
+            // Linting asks the formatter the same question correcting answers, so one command reports both.
+            try SwiftFormat.check(paths: files.compactMap { $0.path?.path }, quiet: options.quiet)
+        }
         if let baselineOutputPath = options.writeBaseline ?? builder.configuration.writeBaseline {
             try Baseline(violations: builder.unfilteredViolations).write(toPath: baselineOutputPath)
         }
@@ -375,13 +379,28 @@ package struct LintOrAnalyzeCommand {
 /// the tree and the keystroke drift apart.
 enum SwiftFormat {
     static func run(over paths: [String], quiet: Bool) throws {
+        try invoke(["format", "--in-place", "--parallel"], over: paths, quiet: quiet, verb: "Formatted")
+    }
+
+    /// Reports what formatting the files are missing, without writing to them.
+    static func check(paths: [String], quiet: Bool) throws {
+        try invoke(["lint", "--strict", "--parallel"], over: paths, quiet: quiet, verb: "Checked")
+    }
+
+    private static func invoke(
+        _ arguments: [String],
+        over paths: [String],
+        quiet: Bool,
+        verb: String
+    ) throws {
         guard paths.isNotEmpty else {
             return
         }
         let binary = try locate()
+        try assertPinnedVersion(of: binary)
         let process = Process()
         process.executableURL = binary
-        process.arguments = ["format", "--in-place", "--parallel"] + paths
+        process.arguments = arguments + paths
         try process.run()
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
@@ -389,23 +408,50 @@ enum SwiftFormat {
                 description: "swift-format exited with \(process.terminationStatus).")
         }
         if !quiet {
-            queuedPrintError("Formatted \(paths.count) file(s) with \(binary.path).")
+            queuedPrintError("\(verb) \(paths.count) file(s) with \(binary.path).")
         }
     }
 
-    private static func locate() throws -> URL {
-        let xcrun = Process()
-        xcrun.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
-        xcrun.arguments = ["--find", "swift-format"]
-        let output = Pipe()
-        xcrun.standardOutput = output
-        xcrun.standardError = Pipe()
-        try xcrun.run()
-        xcrun.waitUntilExit()
-        let found = String(
-            decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+    /// Refuses to run a swift-format the project was not formatted with.
+    ///
+    /// Xcode bundles the formatter, so the version decides the layout: a colleague on a newer Xcode would
+    /// otherwise reformat the whole project and nobody could tell why. A project states which one it expects
+    /// in `.swift-format-version`, beside its `.swift-format`; without that file, whatever Xcode has is used.
+    private static func assertPinnedVersion(of binary: URL) throws {
+        let pin = URL.cwd.appending(component: ".swift-format-version")
+        guard let expected = try? String(contentsOf: pin, encoding: .utf8)
+            .trimmingCharacters(in: .whitespacesAndNewlines), expected.isNotEmpty
+        else {
+            return
+        }
+        let found = try output(of: binary, arguments: ["--version"])
+        guard found == expected else {
+            throw SwiftLintError.usageError(
+                description: """
+                    swift-format \(found), but this project is formatted with \(expected). \
+                    Xcode bundles the formatter, so point xcode-select at an Xcode carrying \(expected), \
+                    or reformat with \(found) and update .swift-format-version in one commit.
+                    """)
+        }
+    }
+
+    private static func output(of binary: URL, arguments: [String]) throws -> String {
+        let process = Process()
+        process.executableURL = binary
+        process.arguments = arguments
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = Pipe()
+        try process.run()
+        process.waitUntilExit()
+        return String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard xcrun.terminationStatus == 0, !found.isEmpty else {
+    }
+
+    private static func locate() throws -> URL {
+        let found = try output(
+            of: URL(fileURLWithPath: "/usr/bin/xcrun"), arguments: ["--find", "swift-format"])
+        guard found.isNotEmpty else {
             throw SwiftLintError.usageError(
                 description: "swift-format not found. It ships inside Xcode, which is what Format File runs.")
         }
