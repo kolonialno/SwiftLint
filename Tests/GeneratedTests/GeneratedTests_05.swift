@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct KeyPathOnlyWhereTheAPITakesOneRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(KeyPathOnlyWhereTheAPITakesOneRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct KeychainBuiltOnlyAtTheRootRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct MultilineArgumentsRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(MultilineArgumentsRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct MultilineCallArgumentsRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(MultilineCallArgumentsRule.description)
     }
 }

@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct RedundantVoidReturnRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(RedundantVoidReturnRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct RequiredDeinitRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct TiendaAPIKitIsUIFreeRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(TiendaAPIKitIsUIFreeRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct TodoRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(TodoRule.description)
     }
 }

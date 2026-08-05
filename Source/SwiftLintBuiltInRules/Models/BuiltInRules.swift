@@ -102,6 +102,7 @@ public let builtInRules: [any Rule.Type] = [
     InvisibleCharacterRule.self,
     IsDisjointRule.self,
     JoinedDefaultParameterRule.self,
+    KeyPathOnlyWhereTheAPITakesOneRule.self,
     KeychainBuiltOnlyAtTheRootRule.self,
     LargeTupleRule.self,
     LastWhereRule.self,

@@ -761,6 +761,11 @@ multiline_parameters_brackets:
   meta:
     opt-in: true
     correctable: false
+multiline_string_opens_on_its_own_line:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
 multiple_closures_with_trailing_closure:
   severity: warning
   meta:
@@ -816,6 +821,11 @@ no_grouping_extension:
     opt-in: true
     correctable: false
 no_legacy_router_readers:
+  severity: warning
+  meta:
+    opt-in: true
+    correctable: false
+no_live_uikit_frame_reads:
   severity: warning
   meta:
     opt-in: true

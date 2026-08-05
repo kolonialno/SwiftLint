@@ -224,32 +224,6 @@ private extension ClosureExprSyntax {
     }
 }
 
-private let argumentLabelByStandardFunction: [String: String?] = [
-    "allSatisfy": nil,
-    "contains": "where",
-    "compactMap": nil,
-    "drop": "while",
-    "filter": nil,
-    "first": "where",
-    "flatMap": nil,
-    "map": nil,
-    "partition": "by",
-    "prefix": "while",
-]
-
-private extension FunctionCallExprSyntax {
-    var isStandardFunction: Bool {
-        if let calleeName, argumentLabelByStandardFunction.keys.contains(calleeName) {
-            return arguments.count + (trailingClosure == nil ? 0 : 1) == 1
-        }
-        return false
-    }
-
-    var calleeName: String? {
-        (calledExpression.as(DeclReferenceExprSyntax.self)
-            ?? calledExpression.as(MemberAccessExprSyntax.self)?.declName)?.baseName.text
-    }
-}
 
 private extension ExprSyntax {
     func asKeyPath(ignoreIdentityClosures: Bool) -> ExprSyntax? {

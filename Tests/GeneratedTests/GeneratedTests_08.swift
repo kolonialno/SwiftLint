@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct PrefixedTopLevelConstantRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(PrefixedTopLevelConstantRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct PrivateActionRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct RedundantTypeAnnotationRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(RedundantTypeAnnotationRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct RedundantVoidReturnRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(RedundantVoidReturnRule.description)
     }
 }

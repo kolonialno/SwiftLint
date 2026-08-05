@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct TodoRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(TodoRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct ToggleBoolRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct UnusedDeclarationRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(UnusedDeclarationRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct UnusedEnumeratedRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(UnusedEnumeratedRule.description)
     }
 }

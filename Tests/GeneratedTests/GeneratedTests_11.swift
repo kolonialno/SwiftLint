@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct UnusedEnumeratedRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(UnusedEnumeratedRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct UnusedImportRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {

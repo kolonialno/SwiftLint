@@ -10,6 +10,14 @@ import Testing
 @testable import SwiftLintCore
 
 @Suite(.rulesRegistered)
+struct NoSpaceInMethodCallRuleGeneratedTests {
+    @Test
+    func withDefaultConfiguration() {
+        verifyRule(NoSpaceInMethodCallRule.description)
+    }
+}
+
+@Suite(.rulesRegistered)
 struct NoUserDefaultsInAppCodeRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
@@ -198,13 +206,5 @@ struct PreferZeroOverExplicitInitRuleGeneratedTests {
     @Test
     func withDefaultConfiguration() {
         verifyRule(PreferZeroOverExplicitInitRule.description)
-    }
-}
-
-@Suite(.rulesRegistered)
-struct PrefixedTopLevelConstantRuleGeneratedTests {
-    @Test
-    func withDefaultConfiguration() {
-        verifyRule(PrefixedTopLevelConstantRule.description)
     }
 }
