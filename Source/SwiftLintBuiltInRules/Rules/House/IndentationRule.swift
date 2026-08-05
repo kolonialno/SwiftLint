@@ -145,20 +145,24 @@ extension TokenSyntax {
             if parent.opensAnIndentationLevel(for: node) {
                 steps += 1
             }
-            if parent.kind == .initializerClause, node.leadingTrivia.containsNewline {
-                // `let x =` with its value on the next line: the value is a continuation of the binding.
+            if parent.isStatementContinued(by: node) {
+                // `let x =` or `return` with the value on the next line: the value continues the statement.
                 steps += 1
             }
-            if parent.kind == .infixOperatorExpr,
-                parent.parent?.kind != .infixOperatorExpr,
-                let operatorToken = parent.brokenOperator,
-                position >= operatorToken.position {
+            if parent.kind == .exprList,
+                let broken = parent.firstBrokenElement,
+                position >= broken.position,
+                parent.opensAnElement(at: self) {
+                // Operators and ternaries reach a rule unfolded, as a flat sequence, so the continuation
+                // is counted once for the whole sequence: `a\n && b\n && c` steps in once, and so does
+                // `condition\n ? this\n : that`.
                 steps += 1
             }
             if parent.isMemberChainRoot,
                 let broken = parent.firstBrokenPeriod,
                 position >= broken.position,
-                !parent.chainBaseIsMultiline {
+                !parent.chainBaseIsMultiline,
+                !parent.continuesAStatement {
                 // A wrapped chain is one continuation level, counted once at its root and only from the
                 // break onwards, so its base still sits on the line that opened it. A chain hanging off a
                 // *multiline* base keeps that base's own level instead: `VStack { … }` then `.padding()`
@@ -192,13 +196,66 @@ extension Syntax {
         children(viewMode: .sourceAccurate).contains { $0.leadingTrivia.containsNewline }
     }
 
-    /// The operator that opens a line in this expression, when one does.
-    var brokenOperator: TokenSyntax? {
-        guard let expression = self.as(InfixOperatorExprSyntax.self) else {
-            return nil
+    /// Whether `token` is where one of this list's own elements begins.
+    ///
+    /// A continuation belongs to the sequence's own lines. Anything nested inside an element — a closure
+    /// body, a wrapped argument list — has its own levels and must not collect this one as well.
+    func opensAnElement(at token: TokenSyntax) -> Bool {
+        children(viewMode: .sourceAccurate)
+            .contains { $0.firstToken(viewMode: .sourceAccurate)?.id == token.id }
+    }
+
+    /// The first element of this sequence to open a line, which is where its continuation begins.
+    ///
+    /// The first element never counts: it is where the sequence starts, and whatever put it on its own line
+    /// — a `return`, an `=` — has already indented it.
+    var firstBrokenElement: Syntax? {
+        children(viewMode: .sourceAccurate).dropFirst().first { $0.leadingTrivia.containsNewline }
+    }
+
+    /// Whether `value` is this statement's own value and starts a line of its own — the `return` keyword
+    /// and the `=` are part of the statement, so only what follows them continues it.
+    func isStatementContinued(by value: Syntax) -> Bool {
+        guard value.leadingTrivia.containsNewline else {
+            return false
         }
-        let operatorToken = expression.operator.firstToken(viewMode: .sourceAccurate)
-        return operatorToken?.leadingTrivia.containsNewline == true ? operatorToken : nil
+        if let returned = self.as(ReturnStmtSyntax.self)?.expression {
+            return Syntax(returned).id == value.id
+        }
+        if let initialized = self.as(InitializerClauseSyntax.self)?.value {
+            return Syntax(initialized).id == value.id
+        }
+        return false
+    }
+
+    /// Whether this expression is the value of a `return` or an `=` that put it on its own line, in which
+    /// case it is already one level in and a chain hanging off it maintains that level.
+    var continuesAStatement: Bool {
+        guard let parent else {
+            return false
+        }
+        return parent.isStatementContinued(by: self)
+    }
+
+    /// Whether this is the outermost expression of an operator chain, where its one level is counted.
+    var isOperatorChainRoot: Bool {
+        kind == .infixOperatorExpr && parent?.kind != .infixOperatorExpr
+    }
+
+    /// The first operator of this chain to open a line. Operands nest to the left, so the outermost
+    /// expression carries the *last* operator — the chain has to be walked to find where it first broke.
+    var firstBrokenOperator: TokenSyntax? {
+        var operators: [TokenSyntax] = []
+        var link: Syntax? = self
+        while let node = link, let expression = node.as(InfixOperatorExprSyntax.self) {
+            if let token = expression.operator.firstToken(viewMode: .sourceAccurate) {
+                operators.append(token)
+            }
+            link = Syntax(expression.leftOperand)
+        }
+        return operators
+            .filter { $0.leadingTrivia.containsNewline }
+            .min { $0.position < $1.position }
     }
 
     /// Whether this is the outermost link of a member chain, which is where the chain's one level is counted.
@@ -232,8 +289,7 @@ extension Syntax {
             if let member = node.as(MemberAccessExprSyntax.self) {
                 base = member.base.map(Syntax.init)
                 link = base
-            } else if let call = node.as(FunctionCallExprSyntax.self),
-                call.calledExpression.is(MemberAccessExprSyntax.self) {
+            } else if node.isMemberChainLink, let call = node.as(FunctionCallExprSyntax.self) {
                 link = Syntax(call.calledExpression)
             } else {
                 break
@@ -253,8 +309,7 @@ extension Syntax {
             if let member = node.as(MemberAccessExprSyntax.self) {
                 periods.append(member.period)
                 link = member.base.map(Syntax.init)
-            } else if let call = node.as(FunctionCallExprSyntax.self),
-                call.calledExpression.is(MemberAccessExprSyntax.self) {
+            } else if node.isMemberChainLink, let call = node.as(FunctionCallExprSyntax.self) {
                 link = Syntax(call.calledExpression)
             } else {
                 link = nil
@@ -274,8 +329,12 @@ private extension Syntax {
     func opensAnIndentationLevel(for child: Syntax) -> Bool {
         switch kind {
         case .codeBlockItemList:
-            // A file's own statements are already at the outermost level.
-            return parent?.is(SourceFileSyntax.self) == false && isBroken
+            // A file's own statements are already at the outermost level, and the house formatter does not
+            // indent what `#if` wraps.
+            if parent?.is(SourceFileSyntax.self) == true || parent?.is(IfConfigClauseSyntax.self) == true {
+                return false
+            }
+            return isBroken
         case .memberBlockItemList, .accessorDeclList,
             .labeledExprList, .functionParameterList, .closureParameterList,
             .arrayElementList, .dictionaryElementList, .conditionElementList,
